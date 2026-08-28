@@ -242,12 +242,34 @@
         "padding_top": 0,
         "padding_bottom": 8
       }
+    },
+    "dds_product_feed": {
+      "type": "dds-featured-collection",
+      "settings": {
+        "title": "Just for you",
+        "collection": "frontpage",
+        "products_to_show": 10,
+        "columns_mobile": "2",
+        "columns_desktop": 5,
+        "show_rating": true,
+        "show_sold": true,
+        "sold_text": "sold",
+        "shipping_note": "Free delivery · COD",
+        "urgency_label": "ALMOST SOLD OUT",
+        "urgency_threshold": 25,
+        "add_label": "Add to cart",
+        "options_label": "Choose options",
+        "color_scheme": "scheme-1",
+        "padding_top": 8,
+        "padding_bottom": 8
+      }
     }
   },
   "order": [
     "dds_savings_bar",
     "dds_hero_slider",
     "dds_category_circles",
+    "dds_product_feed",
     "image_banner",
     "featured_collection"
   ]

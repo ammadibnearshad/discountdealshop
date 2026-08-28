@@ -1,0 +1,250 @@
+{% comment %}
+  DDS product feed — 2-up mobile, 5-up desktop, price-first cards.
+  Reference: _reference/dds-home.html → p.feedhead + .feed
+
+  Dawn's featured-collection + card-product cover the same job, but their card
+  is built around component-card.css (card__inner / card__content / media
+  wrappers) and puts the title first with a quiet price. This design inverts
+  that — the price is the loudest thing on the tile — so the card is its own
+  snippet. Dawn's <product-form> still does the actual add-to-cart.
+{% endcomment %}
+
+{{ 'section-dds-featured-collection.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+
+{% style %}
+  .section-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top | divided_by: 2 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | divided_by: 2 }}px;
+  }
+
+  .section-{{ section.id }} .dds-feed__grid {
+    grid-template-columns: repeat({{ section.settings.columns_mobile }}, minmax(0, 1fr));
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }} {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+
+    .section-{{ section.id }} .dds-feed__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .section-{{ section.id }} .dds-feed__grid {
+      grid-template-columns: repeat({{ section.settings.columns_desktop }}, minmax(0, 1fr));
+    }
+  }
+{% endstyle %}
+
+<div class="dds-feed section-{{ section.id }}">
+  {%- if section.settings.title != blank -%}
+    <h2 class="dds-feed__head">{{ section.settings.title | escape }}</h2>
+  {%- endif -%}
+
+  {%- liquid
+    assign products = section.settings.collection.products
+    assign limit = section.settings.products_to_show
+  -%}
+
+  {%- if products.size > 0 -%}
+    <ul class="dds-feed__grid" role="list">
+      {%- for product in products limit: limit -%}
+        {%- comment -%} First four are above the fold on a 2-up phone grid. {%- endcomment -%}
+        {%- assign eager = false -%}
+        {%- if forloop.index <= 4 -%}
+          {%- assign eager = true -%}
+        {%- endif -%}
+
+        <li class="dds-feed__item">
+          {%- render 'dds-card-product',
+            card_product: product,
+            section_id: section.id,
+            show_rating: section.settings.show_rating,
+            show_sold: section.settings.show_sold,
+            sold_text: section.settings.sold_text,
+            urgency_label: section.settings.urgency_label,
+            urgency_threshold: section.settings.urgency_threshold,
+            shipping_note: section.settings.shipping_note,
+            add_label: section.settings.add_label,
+            options_label: section.settings.options_label,
+            eager: eager
+          -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- else -%}
+    {%- comment -%} Editor-only hint; an unconfigured section stays silent live. {%- endcomment -%}
+    {%- if request.design_mode -%}
+      <p class="dds-feed__empty">Pick a collection to show products here.</p>
+    {%- endif -%}
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "DDS product feed",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:sections.featured-collection.settings.title.label",
+      "default": "Just for you"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:sections.featured-collection.settings.collection.label"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 24,
+      "step": 1,
+      "label": "t:sections.featured-collection.settings.products_to_show.label",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "t:sections.collection-list.settings.header_layout.content"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "2",
+      "label": "t:sections.collection-list.settings.columns_mobile.label"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 3,
+      "max": 6,
+      "step": 1,
+      "label": "t:sections.featured-collection.settings.columns_desktop.label",
+      "info": "Tablet is always 3.",
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "Card content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "default": true,
+      "label": "t:sections.featured-collection.settings.show_rating.label",
+      "info": "Reads the product's reviews rating metafield. Hidden when a product has none."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sold",
+      "default": true,
+      "label": "Show units sold",
+      "info": "Reads the custom.units_sold metafield. Hidden when a product has none — it is never estimated."
+    },
+    {
+      "type": "text",
+      "id": "sold_text",
+      "label": "Units sold suffix",
+      "default": "sold"
+    },
+    {
+      "type": "text",
+      "id": "shipping_note",
+      "label": "Delivery line",
+      "info": "Same on every card. Leave blank to hide.",
+      "default": "Free delivery · COD"
+    },
+    {
+      "type": "header",
+      "content": "Urgency"
+    },
+    {
+      "type": "paragraph",
+      "content": "Driven by real tracked inventory. Products with inventory tracking off, or with \"continue selling when out of stock\" on, never show the chip."
+    },
+    {
+      "type": "text",
+      "id": "urgency_label",
+      "label": "Low stock chip",
+      "info": "Leave blank to hide the chip entirely.",
+      "default": "ALMOST SOLD OUT"
+    },
+    {
+      "type": "range",
+      "id": "urgency_threshold",
+      "min": 1,
+      "max": 50,
+      "step": 1,
+      "unit": "pcs",
+      "label": "Show chip at or below",
+      "default": 25
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "text",
+      "id": "add_label",
+      "label": "Add to cart button",
+      "default": "Add to cart"
+    },
+    {
+      "type": "text",
+      "id": "options_label",
+      "label": "Multi-variant button",
+      "info": "Products with more than one variant link to the product page instead of adding blind.",
+      "default": "Choose options"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.colors.label"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 8
+    }
+  ],
+  "presets": [
+    {
+      "name": "DDS product feed"
+    }
+  ]
+}
+{% endschema %}

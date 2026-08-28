@@ -1,0 +1,233 @@
+/* ==========================================================================
+   DDS product feed + product card
+   Reference: _reference/dds-home.html → p.feedhead + .feed + article.p
+
+   Dawn's root font-size is 62.5% (1rem = 10px). The prototype's rems were
+   16px-based and have been converted.
+
+   Column counts come from the section's inline style block.
+   ========================================================================== */
+
+.dds-feed {
+  max-width: var(--dds-app-width, 52rem);
+  margin-inline: auto;
+}
+
+@media screen and (min-width: 990px) {
+  .dds-feed {
+    max-width: var(--dds-app-width-lg, 108rem);
+  }
+}
+
+/* Heading with the flanking rules ------------------------------------------ */
+
+.dds-feed__head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin: 0.4rem 0 0.8rem;
+  color: var(--dds-ink, #1a1a1a);
+  font-size: 1.36rem;
+  font-weight: 700;
+}
+
+.dds-feed__head::before,
+.dds-feed__head::after {
+  content: '';
+  width: 3.2rem;
+  height: 0.1rem;
+  background-color: var(--dds-line-2, #dcdcdc);
+}
+
+.dds-feed__empty {
+  margin: 0;
+  padding: 2.4rem 1.6rem;
+  color: var(--dds-muted, #8e8e8e);
+  text-align: center;
+}
+
+/* Grid --------------------------------------------------------------------- */
+
+.dds-feed__grid {
+  display: grid;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dds-feed__item {
+  display: flex;
+}
+
+/* Card --------------------------------------------------------------------- */
+
+.dds-card {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--dds-radius, 0.8rem);
+  background-color: rgb(var(--color-background));
+}
+
+.dds-card__media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1 / 1;
+  padding: 1.6rem;
+  background-color: var(--dds-wash, #f6f5f3);
+  color: var(--dds-navy, #12294b);
+}
+
+.dds-card__image,
+.dds-card__placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.dds-card__placeholder {
+  fill: currentColor;
+  opacity: 0.4;
+}
+
+.dds-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.8rem 0.88rem 0.96rem;
+}
+
+/* Title — its ::after makes the whole tile one target. --------------------- */
+
+.dds-card__title {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  color: var(--dds-ink, #1a1a1a);
+  font-size: 1.248rem;
+  line-height: 1.35;
+}
+
+.dds-card__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.dds-card__title a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+/* Price -------------------------------------------------------------------- */
+
+.dds-card__price {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.48rem;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.dds-card__price-now {
+  color: var(--dds-red, #d71e28);
+  font-size: 1.632rem;
+  font-weight: 700;
+}
+
+.dds-card__price-was {
+  color: var(--dds-muted, #8e8e8e);
+  font-size: 1.152rem;
+}
+
+/* Urgency chip ------------------------------------------------------------- */
+
+.dds-card__urgency {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 0.32rem;
+  padding: 0.08rem 0.48rem;
+  border: 0.1rem solid var(--dds-red, #d71e28);
+  border-radius: var(--dds-radius-sm, 0.4rem);
+  background-color: var(--dds-hot, #fff1ec);
+  color: var(--dds-red, #d71e28);
+  font-size: 1.056rem;
+  font-weight: 600;
+}
+
+/* Meta and delivery -------------------------------------------------------- */
+
+.dds-card__meta {
+  margin: 0;
+  color: var(--dds-muted, #8e8e8e);
+  font-size: 1.12rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.dds-card__ship {
+  margin: 0;
+  color: var(--dds-green, #00875a);
+  font-size: 1.088rem;
+  font-weight: 600;
+}
+
+/* Add to cart -------------------------------------------------------------- */
+
+.dds-card__form {
+  margin-top: auto;
+}
+
+.dds-card__add {
+  /* z-index lifts the button above the title's full-card ::after overlay. */
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  /* Reference is 32px; raised to the 44px touch-target floor. */
+  min-height: 4.4rem;
+  margin-top: auto;
+  padding: 0 1.2rem;
+  border: 0;
+  border-radius: 2.2rem;
+  background: linear-gradient(90deg, var(--dds-red, #d71e28), var(--dds-red-2, #f0562a));
+  color: var(--dds-on-red, #ffffff);
+  font-family: inherit;
+  font-size: 1.216rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.dds-card__form .dds-card__add {
+  margin-top: 0;
+}
+
+.dds-card__add[disabled] {
+  background: var(--dds-line-2, #dcdcdc);
+  color: var(--dds-muted, #8e8e8e);
+  cursor: default;
+}
+
+.dds-card__add .loading__spinner {
+  position: absolute;
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.dds-card__add .loading__spinner .spinner {
+  width: 100%;
+  height: 100%;
+}

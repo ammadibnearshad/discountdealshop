@@ -1,0 +1,176 @@
+{% doc %}
+  DDS product card — image on wash, big red price, urgency chip, sold count,
+  add-to-cart on the tile.
+  Reference: _reference/dds-home.html → article.p
+
+  Every number on this card comes from real store data. Nothing is hardcoded
+  and nothing is randomised:
+    - price / compare-at  → product fields
+    - rating              → metafields.reviews.rating (same source Dawn uses)
+    - units sold          → metafields.custom.units_sold (no native Shopify
+                            field exists; the line is omitted when unset)
+    - urgency chip        → tracked inventory below the section's threshold
+
+  @param {object} card_product - Product to render (required)
+  @param {string} section_id - Owning section id, for unique form ids (required)
+  @param {boolean} [show_rating] - Render the review score
+  @param {boolean} [show_sold] - Render the units-sold count
+  @param {string} [sold_text] - Word after the count, e.g. "sold"
+  @param {string} [urgency_label] - Low-stock chip text; blank disables the chip
+  @param {number} [urgency_threshold] - Show the chip at or below this quantity
+  @param {string} [shipping_note] - Store-wide delivery line
+  @param {string} [add_label] - Add-to-cart button text
+  @param {string} [options_label] - Button text for multi-variant products
+  @param {boolean} [eager] - Load the image eagerly (above-the-fold cards)
+{% enddoc %}
+
+{%- liquid
+  assign variant = card_product.selected_or_first_available_variant
+
+  assign rating = ''
+  if show_rating and card_product.metafields.reviews.rating.value != blank
+    assign rating = card_product.metafields.reviews.rating.value.rating | round: 1
+  endif
+
+  assign sold_raw = card_product.metafields.custom.units_sold.value | plus: 0
+  assign sold_label = ''
+  if show_sold and sold_raw > 0
+    if sold_raw >= 1000
+      assign sold_label = sold_raw | divided_by: 1000 | append: 'K+'
+    else
+      assign sold_label = sold_raw | append: '+'
+    endif
+  endif
+
+  # Only meaningful when inventory is tracked and overselling is off — with
+  # "continue selling" a low count says nothing about scarcity.
+  assign show_urgency = false
+  if urgency_label != blank and variant.inventory_management != blank and variant.inventory_policy == 'deny'
+    if variant.inventory_quantity > 0 and variant.inventory_quantity <= urgency_threshold
+      assign show_urgency = true
+    endif
+  endif
+
+  assign form_id = 'dds-add-' | append: section_id | append: '-' | append: card_product.id
+
+  assign img_loading = 'lazy'
+  if eager
+    assign img_loading = 'eager'
+  endif
+
+  assign img_alt = card_product.featured_media.alt | default: card_product.title | escape
+-%}
+
+<article class="dds-card">
+  <div class="dds-card__media">
+    {%- if card_product.featured_media != blank -%}
+      {{
+        card_product.featured_media
+        | image_url: width: 800
+        | image_tag:
+          class: 'dds-card__image',
+          widths: '165, 250, 375, 550, 750',
+          sizes: '(min-width: 990px) 200px, (min-width: 750px) 165px, 45vw',
+          alt: img_alt,
+          loading: img_loading
+      }}
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag: 'dds-card__placeholder' }}
+    {%- endif -%}
+  </div>
+
+  <div class="dds-card__body">
+    {%- comment -%}
+      The title link's ::after covers the whole card, so the tile is one big
+      target. The add-to-cart button sits above it on the z axis.
+    {%- endcomment -%}
+    <p class="dds-card__title">
+      <a href="{{ card_product.url }}" id="{{ form_id }}-title">{{ card_product.title | escape }}</a>
+    </p>
+
+    <p class="dds-card__price">
+      {%- if card_product.compare_at_price > card_product.price -%}
+        <span class="visually-hidden">{{ 'products.product.price.sale_price' | t }}</span>
+      {%- endif -%}
+      <span class="dds-card__price-now">{{ card_product.price | money }}</span>
+      {%- if card_product.compare_at_price > card_product.price -%}
+        {%- comment -%}
+          The struck price drops the currency symbol to match the reference.
+          It is still store-formatted, and the full amount is announced below.
+        {%- endcomment -%}
+        <s class="dds-card__price-was" aria-hidden="true">
+          {{- card_product.compare_at_price | money_without_currency -}}
+        </s>
+        <span class="visually-hidden">
+          {{ 'products.product.price.regular_price' | t }} {{ card_product.compare_at_price | money }}
+        </span>
+      {%- endif -%}
+    </p>
+
+    {%- if show_urgency -%}
+      <span class="dds-card__urgency">{{ urgency_label | escape }}</span>
+    {%- endif -%}
+
+    {%- if rating != blank or sold_label != blank -%}
+      <p class="dds-card__meta">
+        {%- if rating != blank -%}
+          <span
+            class="dds-card__rating"
+            aria-label="{{ 'accessibility.star_reviews_info' | t: rating_value: rating, rating_max: card_product.metafields.reviews.rating.value.scale_max }}"
+          >
+            {{- rating -}}
+          </span>
+        {%- endif -%}
+        {%- if rating != blank and sold_label != blank -%}
+          <span aria-hidden="true"> &middot; </span>
+        {%- endif -%}
+        {%- if sold_label != blank -%}
+          <span class="dds-card__sold">{{ sold_label }} {{ sold_text | escape }}</span>
+        {%- endif -%}
+      </p>
+    {%- endif -%}
+
+    {%- if shipping_note != blank -%}
+      <p class="dds-card__ship">{{ shipping_note | escape }}</p>
+    {%- endif -%}
+
+    {%- if card_product.available == false -%}
+      <button class="dds-card__add" type="button" disabled>
+        <span>{{ 'products.product.sold_out' | t }}</span>
+      </button>
+    {%- elsif card_product.variants_count > 1 -%}
+      {%- comment -%}
+        Multi-variant products go to the product page rather than silently
+        adding whichever variant happens to be first.
+      {%- endcomment -%}
+      <a class="dds-card__add" href="{{ card_product.url }}">
+        <span>{{ options_label | escape }}</span>
+      </a>
+    {%- else -%}
+      <product-form data-section-id="{{ section_id }}">
+        {%- form 'product',
+          card_product,
+          id: form_id,
+          class: 'dds-card__form',
+          novalidate: 'novalidate',
+          data-type: 'add-to-cart-form'
+        -%}
+          <input type="hidden" name="id" value="{{ variant.id }}" class="product-variant-id">
+          <button
+            id="{{ form_id }}-submit"
+            type="submit"
+            name="add"
+            class="dds-card__add"
+            aria-labelledby="{{ form_id }}-submit {{ form_id }}-title"
+            aria-live="polite"
+            data-sold-out-message="true"
+          >
+            <span>{{ add_label | escape }}</span>
+            <span class="sold-out-message hidden">{{ 'products.product.sold_out' | t }}</span>
+            {%- render 'loading-spinner' -%}
+          </button>
+        {%- endform -%}
+      </product-form>
+    {%- endif -%}
+  </div>
+</article>
