@@ -45,14 +45,22 @@
   display: none;
 }
 
+/* Stacked on mobile — art and copy each take the full slide width. Splits
+   into two columns from the tablet breakpoint up. */
 .dds-hero__slide {
   display: grid;
   flex: 0 0 100%;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 1.6rem;
   align-items: center;
   padding: 1.6rem 1.6rem 2.56rem;
   scroll-snap-align: start;
+}
+
+@media screen and (min-width: 750px) {
+  .dds-hero__slide {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 @media screen and (min-width: 990px) {
@@ -65,14 +73,23 @@
 
 /* Art ---------------------------------------------------------------------- */
 
+/* Ratio follows how wide the art actually is: a landscape crop while it spans
+   the full slide, square once it drops into a narrow tablet column, landscape
+   again on desktop where that column is ~460px. */
 .dds-hero__art {
   display: grid;
   place-items: center;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
   padding: 1.76rem;
   border-radius: var(--dds-radius, 0.8rem);
   background-color: var(--dds-wash, #f6f5f3);
+}
+
+@media screen and (min-width: 750px) {
+  .dds-hero__art {
+    aspect-ratio: 1 / 1;
+  }
 }
 
 @media screen and (min-width: 990px) {
