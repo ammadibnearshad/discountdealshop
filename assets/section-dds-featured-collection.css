@@ -78,7 +78,6 @@
   display: grid;
   place-items: center;
   aspect-ratio: 1 / 1;
-  padding: 1.6rem;
   background-color: var(--dds-wash, #f6f5f3);
   color: var(--dds-navy, #12294b);
 }
