@@ -106,7 +106,8 @@
       "settings": {
         "tag_label": "SAVINGS",
         "padding_top": 12,
-        "padding_bottom": 8
+        "padding_bottom": 8,
+        "rotate_speed": 3
       }
     },
     "dds_hero_slider": {

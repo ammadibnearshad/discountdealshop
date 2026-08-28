@@ -9,6 +9,7 @@
 {% endcomment %}
 
 {{ 'section-dds-savings-bar.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'section-dds-savings-bar.js' | asset_url }}" defer="defer"></script>
 
 {% style %}
   .section-{{ section.id }} {
@@ -25,7 +26,7 @@
 {% endstyle %}
 
 <div class="dds-savings section-{{ section.id }}">
-  <div class="dds-savings__bar">
+  <dds-savings-bar class="dds-savings__bar" data-rotate-speed="{{ section.settings.rotate_speed }}">
     {%- if section.settings.tag_label != blank -%}
       <span class="dds-savings__tag">
         {%- render 'icon-dds-bolt' -%}
@@ -34,16 +35,24 @@
     {%- endif -%}
 
     {%- if section.blocks.size > 0 -%}
-      <ul class="dds-savings__items" role="list">
+      {%- comment -%}
+        Every promise is in the DOM at all times — on mobile the inactive ones
+        are only visually faded out, so screen readers still announce all of
+        them and nothing depends on the timer running.
+      {%- endcomment -%}
+      <ul class="dds-savings__items" role="list" data-savings-items>
         {%- for block in section.blocks -%}
-          <li class="dds-savings__item" {{ block.shopify_attributes }}>
+          <li
+            class="dds-savings__item{% if forloop.first %} dds-savings__item--active{% endif %}"
+            {{ block.shopify_attributes }}
+          >
             {%- render 'icon-dds-check' -%}
             {{ block.settings.text | escape }}
           </li>
         {%- endfor -%}
       </ul>
     {%- endif -%}
-  </div>
+  </dds-savings-bar>
 </div>
 
 {% schema %}
@@ -58,6 +67,17 @@
       "label": "Tag label",
       "info": "The bolt chip at the start of the bar. Leave blank to hide it.",
       "default": "SAVINGS"
+    },
+    {
+      "type": "range",
+      "id": "rotate_speed",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "unit": "s",
+      "label": "Change promise every",
+      "info": "Mobile only. Wider screens show all promises at once, as does reduced motion.",
+      "default": 3
     },
     {
       "type": "header",
