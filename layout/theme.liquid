@@ -69,6 +69,11 @@
       assign body_font_bold = settings.type_body_font | font_modify: 'weight', 'bold'
       assign body_font_italic = settings.type_body_font | font_modify: 'style', 'italic'
       assign body_font_bold_italic = body_font_bold | font_modify: 'style', 'italic'
+      # DDS: the prototypes use 500 and 600 as well as 400/700. Dawn only loads
+      # 400/700, so without these the browser snaps 500 down to 400 and 600 up
+      # to 700. Both resolve to nil (and render nothing) on fonts lacking them.
+      assign body_font_medium = settings.type_body_font | font_modify: 'weight', '500'
+      assign body_font_semibold = settings.type_body_font | font_modify: 'weight', '600'
     %}
 
     {% style %}
@@ -77,6 +82,9 @@
       {{ body_font_italic | font_face: font_display: 'swap' }}
       {{ body_font_bold_italic | font_face: font_display: 'swap' }}
       {{ settings.type_header_font | font_face: font_display: 'swap' }}
+      {%- comment -%} DDS: extra weights {%- endcomment -%}
+      {{ body_font_medium | font_face: font_display: 'swap' }}
+      {{ body_font_semibold | font_face: font_display: 'swap' }}
 
       {% for scheme in settings.color_schemes -%}
         {% assign scheme_classes = scheme_classes | append: ', .color-' | append: scheme.id %}
