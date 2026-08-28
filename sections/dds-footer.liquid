@@ -1,0 +1,250 @@
+{% comment %}
+  DDS footer — brand column plus menu columns on a white card, with a base row
+  carrying payment methods and the copyright.
+  Reference: _reference/dds-home.html → footer.ftr
+
+  Dawn's footer overlaps heavily and its link_list block pattern is reused here
+  so navigation still lives in Admin → Navigation. What could not be reused is
+  the payment row: Dawn renders `shop.enabled_payment_types | payment_type_svg_tag`,
+  which has no icons for Cash on Delivery, JazzCash or Easypaisa — the three
+  that matter most in Pakistan. Those are plain labels instead.
+{% endcomment %}
+
+{{ 'section-dds-footer.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  .section-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top | divided_by: 2 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | divided_by: 2 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }} {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="dds-footer section-{{ section.id }}">
+  <footer class="dds-footer__card color-{{ section.settings.color_scheme }} gradient">
+    <div class="dds-footer__cols">
+      {%- if section.settings.show_brand -%}
+        <div class="dds-footer__brand">
+          {%- if settings.logo != blank -%}
+            {%- liquid
+              assign logo_w = section.settings.logo_width
+              assign logo_h = logo_w | divided_by: settings.logo.aspect_ratio | round
+              assign logo_w2 = logo_w | times: 2
+              assign logo_widths = logo_w | append: ', ' | append: logo_w2
+              assign logo_sizes = logo_w | append: 'px'
+              assign logo_alt = settings.logo.alt | default: shop.name | escape
+            -%}
+            {{
+              settings.logo
+              | image_url: width: 600
+              | image_tag:
+                class: 'dds-footer__logo',
+                widths: logo_widths,
+                sizes: logo_sizes,
+                width: logo_w,
+                height: logo_h,
+                alt: logo_alt,
+                loading: 'lazy'
+            }}
+          {%- else -%}
+            <p class="dds-footer__shop-name">{{ shop.name }}</p>
+          {%- endif -%}
+
+          {%- if section.settings.description != blank -%}
+            <p class="dds-footer__text">{{ section.settings.description | escape }}</p>
+          {%- endif -%}
+
+          {%- if section.settings.phone != blank or section.settings.hours != blank -%}
+            <p class="dds-footer__text">
+              {%- if section.settings.phone != blank -%}
+                <a class="dds-footer__phone" href="tel:{{ section.settings.phone | strip | replace: ' ', '' }}">
+                  {{- section.settings.phone | escape -}}
+                </a>
+              {%- endif -%}
+              {%- if section.settings.phone != blank and section.settings.hours != blank -%}<br>{%- endif -%}
+              {%- if section.settings.hours != blank -%}
+                {{ section.settings.hours | escape }}
+              {%- endif -%}
+            </p>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'menu' and block.settings.menu != blank -%}
+          <div class="dds-footer__col" {{ block.shopify_attributes }}>
+            {%- if block.settings.heading != blank -%}
+              <h2 class="dds-footer__col-heading">{{ block.settings.heading | escape }}</h2>
+            {%- endif -%}
+            <ul class="dds-footer__links" role="list">
+              {%- for link in block.settings.menu.links -%}
+                <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+              {%- endfor -%}
+            </ul>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    <div class="dds-footer__base">
+      {%- if section.settings.payment_methods != blank -%}
+        {%- comment -%}
+          Plain labels, not Shopify payment icons — COD, JazzCash and Easypaisa
+          have none. Comma separated so the merchant edits one field.
+        {%- endcomment -%}
+        <ul class="dds-footer__pay" role="list">
+          {%- assign payment_labels = section.settings.payment_methods | split: ',' -%}
+          {%- for label in payment_labels -%}
+            {%- assign trimmed = label | strip -%}
+            {%- if trimmed != blank -%}
+              <li>{{ trimmed | escape }}</li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+      <p class="dds-footer__legal">
+        &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}
+        {%- if section.settings.show_policy -%}
+          {%- for policy in shop.policies -%}
+            {%- if policy != blank -%}
+              <span aria-hidden="true"> &middot; </span>
+              <a href="{{ policy.url }}">{{ policy.title }}</a>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+      </p>
+    </div>
+  </footer>
+</div>
+
+{% schema %}
+{
+  "name": "DDS footer",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Brand column"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_brand",
+      "default": true,
+      "label": "Show brand column"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:sections.header.settings.logo_help.content"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 60,
+      "max": 220,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo width",
+      "default": 120
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Everyday kitchen and household items, delivered free all over Pakistan."
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "Phone number",
+      "info": "Shown as a tap-to-call link.",
+      "default": "+92 300 0000000"
+    },
+    {
+      "type": "text",
+      "id": "hours",
+      "label": "Opening hours",
+      "default": "9am–9pm, Mon–Sat"
+    },
+    {
+      "type": "header",
+      "content": "Base row"
+    },
+    {
+      "type": "text",
+      "id": "payment_methods",
+      "label": "Payment methods",
+      "info": "Comma separated. Plain labels, since Cash on Delivery, JazzCash and Easypaisa have no Shopify payment icon.",
+      "default": "Cash on Delivery, JazzCash, Easypaisa, Bank transfer, Visa, Mastercard"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_policy",
+      "default": true,
+      "label": "t:sections.footer.settings.show_policy.label",
+      "info": "t:sections.footer.settings.show_policy.info"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.colors.label"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 8
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Menu column",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Shop"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "default": "footer",
+          "label": "t:sections.footer.blocks.link_list.settings.menu.label",
+          "info": "Only top-level links are shown."
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

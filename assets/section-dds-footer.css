@@ -1,0 +1,131 @@
+/* ==========================================================================
+   DDS footer
+   Reference: _reference/dds-home.html → footer.ftr
+
+   Dawn's root font-size is 62.5% (1rem = 10px). The prototype's rems were
+   16px-based and have been converted.
+   ========================================================================== */
+
+.dds-footer {
+  max-width: var(--dds-app-width, 52rem);
+  margin-inline: auto;
+}
+
+@media screen and (min-width: 990px) {
+  .dds-footer {
+    max-width: var(--dds-app-width-lg, 108rem);
+  }
+}
+
+.dds-footer__card {
+  padding: 2rem 1.44rem 2.4rem;
+  border-radius: var(--dds-card-radius, 0);
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+}
+
+/* Columns ------------------------------------------------------------------ */
+
+.dds-footer__cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.76rem;
+}
+
+@media screen and (min-width: 750px) {
+  .dds-footer__cols {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Brand -------------------------------------------------------------------- */
+
+.dds-footer__logo {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+}
+
+.dds-footer__shop-name {
+  margin: 0;
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  font-size: 1.6rem;
+}
+
+.dds-footer__text {
+  margin: 0.8rem 0 0;
+  color: var(--dds-ink-2, #5c5c5c);
+  font-size: 1.264rem;
+  line-height: 1.5;
+}
+
+.dds-footer__phone {
+  color: inherit;
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+}
+
+/* Menu columns ------------------------------------------------------------- */
+
+.dds-footer__col-heading {
+  margin: 0 0 0.8rem;
+  color: var(--dds-muted, #8e8e8e);
+  font-size: 1.152rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dds-footer__links {
+  display: grid;
+  gap: 0.56rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 1.264rem;
+}
+
+.dds-footer__links a {
+  color: var(--dds-ink-2, #5c5c5c);
+  text-decoration: none;
+}
+
+/* Base row ----------------------------------------------------------------- */
+
+.dds-footer__base {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1.76rem;
+  padding-top: 1.44rem;
+  border-top: 0.1rem solid var(--dds-line, #ededed);
+  color: var(--dds-muted, #8e8e8e);
+  font-size: 1.152rem;
+}
+
+.dds-footer__pay {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.96rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--dds-ink-2, #5c5c5c);
+  font-size: 1.12rem;
+}
+
+.dds-footer__legal {
+  margin: 0;
+}
+
+.dds-footer__legal a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.dds-footer__links a:hover,
+.dds-footer__legal a:hover,
+.dds-footer__phone:hover {
+  text-decoration: underline;
+}

@@ -1,1 +1,52 @@
-{"name":"t:sections.footer.name","type":"footer","sections":{"footer":{"type":"footer","settings":{"color_scheme":"scheme-1","newsletter_enable":true,"newsletter_heading":"Subscribe to our emails","enable_follow_on_shop":true,"show_social":true,"enable_country_selector":true,"enable_language_selector":true,"payment_enable":true,"show_policy":true,"margin_top":0,"padding_top":36,"padding_bottom":36}}},"order":["footer"]}
+{
+  "name": "t:sections.footer.name",
+  "type": "footer",
+  "sections": {
+    "dds-footer": {
+      "type": "dds-footer",
+      "blocks": {
+        "menu_shop": {
+          "type": "menu",
+          "settings": {
+            "heading": "Shop",
+            "menu": "footer"
+          }
+        },
+        "menu_help": {
+          "type": "menu",
+          "settings": {
+            "heading": "Help",
+            "menu": "footer"
+          }
+        },
+        "menu_company": {
+          "type": "menu",
+          "settings": {
+            "heading": "Company",
+            "menu": "footer"
+          }
+        }
+      },
+      "block_order": [
+        "menu_shop",
+        "menu_help",
+        "menu_company"
+      ],
+      "settings": {
+        "show_brand": true,
+        "logo_width": 120,
+        "description": "Everyday kitchen and household items, delivered free all over Pakistan.",
+        "phone": "+92 300 0000000",
+        "hours": "9am–9pm, Mon–Sat",
+        "payment_methods": "Cash on Delivery, JazzCash, Easypaisa, Bank transfer, Visa, Mastercard",
+        "show_policy": true,
+        "color_scheme": "scheme-1",
+        "padding_top": 8,
+        "padding_bottom": 8
+      }
+    }
+  },
+  "order": [
+    "dds-footer"
+  ]
+}
