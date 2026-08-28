@@ -9,73 +9,6 @@
  */
 {
   "sections": {
-    "image_banner": {
-      "type": "image-banner",
-      "blocks": {
-        "heading": {
-          "type": "heading",
-          "settings": {
-            "heading": "Browse our latest products",
-            "heading_size": "h0"
-          }
-        },
-        "button": {
-          "type": "buttons",
-          "settings": {
-            "button_label_1": "Shop all",
-            "button_link_1": "shopify://collections/all",
-            "button_style_secondary_1": true,
-            "button_label_2": "",
-            "button_link_2": "",
-            "button_style_secondary_2": false
-          }
-        }
-      },
-      "block_order": [
-        "heading",
-        "button"
-      ],
-      "settings": {
-        "image_overlay_opacity": 40,
-        "image_height": "large",
-        "image_behavior": "none",
-        "desktop_content_position": "bottom-center",
-        "desktop_content_alignment": "center",
-        "show_text_box": false,
-        "color_scheme": "scheme-3",
-        "stack_images_on_mobile": false,
-        "mobile_content_alignment": "center",
-        "show_text_below": false
-      }
-    },
-    "featured_collection": {
-      "type": "featured-collection",
-      "settings": {
-        "collection": "frontpage",
-        "products_to_show": 8,
-        "title": "Featured products",
-        "heading_size": "h2",
-        "description": "",
-        "show_description": false,
-        "description_style": "body",
-        "columns_desktop": 4,
-        "enable_desktop_slider": false,
-        "full_width": false,
-        "show_view_all": true,
-        "view_all_style": "solid",
-        "color_scheme": "scheme-1",
-        "image_ratio": "adapt",
-        "image_shape": "default",
-        "show_secondary_image": true,
-        "show_vendor": false,
-        "show_rating": false,
-        "quick_add": "none",
-        "columns_mobile": "2",
-        "swipe_on_mobile": false,
-        "padding_top": 44,
-        "padding_bottom": 36
-      }
-    },
     "dds_savings_bar": {
       "type": "dds-savings-bar",
       "blocks": {
@@ -105,9 +38,9 @@
       ],
       "settings": {
         "tag_label": "SAVINGS",
+        "rotate_speed": 3,
         "padding_top": 12,
-        "padding_bottom": 8,
-        "rotate_speed": 3
+        "padding_bottom": 8
       }
     },
     "dds_hero_slider": {
@@ -168,6 +101,7 @@
         "category_1": {
           "type": "category",
           "settings": {
+            "collection": "",
             "label": "Kitchen",
             "link": ""
           }
@@ -175,6 +109,7 @@
         "category_2": {
           "type": "category",
           "settings": {
+            "collection": "",
             "label": "Organizers",
             "link": ""
           }
@@ -182,6 +117,7 @@
         "category_3": {
           "type": "category",
           "settings": {
+            "collection": "",
             "label": "Racks",
             "link": ""
           }
@@ -189,6 +125,7 @@
         "category_4": {
           "type": "category",
           "settings": {
+            "collection": "",
             "label": "Cleaning",
             "link": ""
           }
@@ -196,6 +133,7 @@
         "category_5": {
           "type": "category",
           "settings": {
+            "collection": "",
             "label": "Lunch box",
             "link": ""
           }
@@ -203,6 +141,7 @@
         "category_6": {
           "type": "category",
           "settings": {
+            "collection": "",
             "label": "Bottles",
             "link": ""
           }
@@ -210,6 +149,7 @@
         "category_7": {
           "type": "category",
           "settings": {
+            "collection": "",
             "label": "Hooks",
             "link": ""
           }
@@ -217,6 +157,7 @@
         "category_8": {
           "type": "category",
           "settings": {
+            "collection": "",
             "label": "Kids",
             "link": ""
           }
@@ -247,7 +188,7 @@
       "type": "dds-featured-collection",
       "settings": {
         "title": "Just for you",
-        "collection": "frontpage",
+        "collection": "all",
         "products_to_show": 10,
         "columns_mobile": "2",
         "columns_desktop": 5,
@@ -269,8 +210,6 @@
     "dds_savings_bar",
     "dds_hero_slider",
     "dds_category_circles",
-    "dds_product_feed",
-    "image_banner",
-    "featured_collection"
+    "dds_product_feed"
   ]
 }
