@@ -76,7 +76,8 @@
     `header-wrapper` is required: Dawn's HeaderDrawer JS calls
     `this.closest('.header-wrapper')` and throws without it.
   {%- endcomment -%}
-  <header class="dds-header__inner">
+  <header>
+    <div class="dds-header__inner">
     {%- liquid
       assign social_links = false
       if settings.social_twitter_link != blank or settings.social_facebook_link != blank or settings.social_pinterest_link != blank or settings.social_instagram_link != blank or settings.social_youtube_link != blank or settings.social_vimeo_link != blank or settings.social_tiktok_link != blank or settings.social_tumblr_link != blank or settings.social_snapchat_link != blank
@@ -183,6 +184,32 @@
         </div>
       {%- endif -%}
     </a>
+    </div>
+
+    {%- comment -%}
+      Menu row. This is the site menu on desktop — the drawer above is hidden
+      at 990px — so it is driven by the same link list the drawer uses rather
+      than by its own blocks. Scrolls horizontally when it overflows.
+    {%- endcomment -%}
+    {%- if section.settings.menu != blank and section.settings.menu.links.size > 0 -%}
+      <nav class="dds-header__nav" aria-label="{{ 'sections.header.menu' | t }}">
+        <ul class="dds-header__nav-list" role="list">
+          {%- for link in section.settings.menu.links -%}
+            <li>
+              <a
+                href="{{ link.url }}"
+                class="dds-header__nav-link{% if link.active %} dds-header__nav-link--active{% endif %}"
+                {% if link.current %}
+                  aria-current="page"
+                {% endif %}
+              >
+                {{ link.title | escape }}
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </nav>
+    {%- endif -%}
   </header>
 </{{ header_tag }}>
 

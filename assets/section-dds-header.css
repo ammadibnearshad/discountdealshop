@@ -37,6 +37,56 @@
   }
 }
 
+/* Menu row ----------------------------------------------------------------- */
+/* The site menu on desktop, since the drawer toggle is hidden at 990px.
+   Reference: _reference/dds-home.html → nav.chips */
+
+.dds-header__nav {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  border-top: 0.1rem solid var(--dds-line, #ededed);
+  scrollbar-width: none;
+}
+
+.dds-header__nav::-webkit-scrollbar {
+  display: none;
+}
+
+.dds-header__nav-list {
+  display: flex;
+  max-width: var(--dds-app-width, 52rem);
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+/* Offsets the link's own padding so the first item lines up with the logo. */
+@media screen and (min-width: 990px) {
+  .dds-header__nav-list {
+    max-width: var(--dds-app-width-lg, 108rem);
+    padding-inline: 0.48rem;
+  }
+}
+
+.dds-header__nav-link {
+  display: flex;
+  align-items: center;
+  /* Reference row is ~36px; raised to the 44px touch-target floor. */
+  min-height: 4.4rem;
+  padding: 0 1.12rem;
+  border-bottom: 0.2rem solid transparent;
+  color: var(--dds-ink-2, #5c5c5c);
+  font-size: 1.328rem;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.dds-header__nav-link--active {
+  border-bottom-color: var(--dds-red, #d71e28);
+  color: var(--dds-red, #d71e28);
+  font-weight: 600;
+}
+
 /* Logo --------------------------------------------------------------------- */
 
 /* Shrinkable so the logo can never starve the search pill — the bar carries
