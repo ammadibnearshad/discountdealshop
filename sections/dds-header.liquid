@@ -12,6 +12,8 @@
 {{ 'section-dds-header.css' | asset_url | stylesheet_tag }}
 <link rel="stylesheet" href="{{ 'component-search.css' | asset_url }}" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{{ 'component-cart-notification.css' | asset_url }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'component-list-menu.css' | asset_url }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'component-menu-drawer.css' | asset_url }}" media="print" onload="this.media='all'">
 {%- if settings.predictive_search_enabled -%}
   <link rel="stylesheet" href="{{ 'component-price.css' | asset_url }}" media="print" onload="this.media='all'">
 {%- endif -%}
@@ -42,19 +44,60 @@
     padding-bottom: {{ section.settings.padding_bottom }}px;
   }
 
+  {%- comment -%} Safari z-index fix, same as Dawn's header. {%- endcomment -%}
+  #shopify-section-{{ section.id }} {
+    position: sticky;
+  }
+
   {%- if section.settings.sticky_header_type == 'always' -%}
     #shopify-section-{{ section.id }} {
-      position: sticky;
       top: 0;
+    }
+  {%- endif -%}
+
+  {%- comment -%}
+    The chip bar is the menu on desktop, so the drawer toggle is hidden there
+    unless the merchant opts into showing it at all sizes.
+  {%- endcomment -%}
+  {%- if section.settings.menu_type_desktop != 'drawer' -%}
+    @media screen and (min-width: 990px) {
+      .section-{{ section.id }} header-drawer {
+        display: none;
+      }
     }
   {%- endif -%}
 {% endstyle %}
 
 <{{ header_tag }}
   {%- if header_tag == 'sticky-header' %} data-sticky-type="on-scroll-up"{% endif %}
-  class="dds-header section-{{ section.id }} color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} dds-header--bordered{% endif %}"
+  class="dds-header header-wrapper section-{{ section.id }} color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} dds-header--bordered{% endif %}"
 >
+  {%- comment -%}
+    `header-wrapper` is required: Dawn's HeaderDrawer JS calls
+    `this.closest('.header-wrapper')` and throws without it.
+  {%- endcomment -%}
   <header class="dds-header__inner">
+    {%- liquid
+      assign social_links = false
+      if settings.social_twitter_link != blank or settings.social_facebook_link != blank or settings.social_pinterest_link != blank or settings.social_instagram_link != blank or settings.social_youtube_link != blank or settings.social_vimeo_link != blank or settings.social_tiktok_link != blank or settings.social_tumblr_link != blank or settings.social_snapchat_link != blank
+        assign social_links = true
+      endif
+
+      assign country_selector = false
+      if section.settings.enable_country_selector and localization.available_countries.size > 1
+        assign country_selector = true
+      endif
+
+      assign language_selector = false
+      if section.settings.enable_language_selector and localization.available_languages.size > 1
+        assign language_selector = true
+      endif
+
+      if section.settings.menu != blank
+        render 'header-drawer', show_country_selector: country_selector, show_language_selector: language_selector, show_social_links: social_links
+      endif
+    -%}
+
     {%- liquid
       assign logo_alt = settings.logo.alt | default: shop.name | escape
       assign logo_h = section.settings.logo_height
@@ -194,6 +237,35 @@
   "class": "section-header",
   "settings": [
     {
+      "type": "link_list",
+      "id": "menu",
+      "default": "main-menu",
+      "label": "t:sections.header.settings.menu.label"
+    },
+    {
+      "type": "select",
+      "id": "menu_type_desktop",
+      "options": [
+        {
+          "value": "dropdown",
+          "label": "Mobile and tablet only"
+        },
+        {
+          "value": "drawer",
+          "label": "All screen sizes"
+        }
+      ],
+      "default": "dropdown",
+      "label": "Show menu drawer on",
+      "info": "The category chip bar is the menu on desktop, so the drawer is hidden there by default."
+    },
+    {
+      "type": "color_scheme",
+      "id": "menu_color_scheme",
+      "label": "t:sections.header.settings.menu_color_scheme.label",
+      "default": "scheme-1"
+    },
+    {
       "type": "paragraph",
       "content": "t:sections.header.settings.logo_help.content"
     },
@@ -250,6 +322,24 @@
       "id": "color_scheme",
       "label": "t:sections.all.colors.label",
       "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.header.settings.header__utilities.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_country_selector",
+      "default": true,
+      "label": "t:sections.header.settings.enable_country_selector.label",
+      "info": "t:sections.header.settings.enable_country_selector.info"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_language_selector",
+      "default": true,
+      "label": "t:sections.header.settings.enable_language_selector.label",
+      "info": "t:sections.header.settings.enable_language_selector.info"
     },
     {
       "type": "header",
