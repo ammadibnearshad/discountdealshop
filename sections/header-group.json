@@ -38,7 +38,7 @@
     "dds-header": {
       "type": "dds-header",
       "settings": {
-        "logo_height": 56,
+        "logo_height": 48,
         "search_placeholder": "Search jars, racks, hooks…",
         "sticky_header_type": "always",
         "show_line_separator": true,
