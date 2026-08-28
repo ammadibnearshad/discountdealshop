@@ -1,0 +1,160 @@
+/* ==========================================================================
+   DDS header — app bar: logo, search pill, account, cart.
+   Reference: _reference/dds-home.html → .bar
+
+   Note on units: Dawn sets the root font-size to 62.5%, so 1rem = 10px here.
+   The prototype's rems were 16px-based and have been converted (e.g. the
+   prototype's .5rem gap = 8px = 0.8rem in Dawn).
+
+   Colour fallbacks below (#F2F2F2, #EDEDED, …) are the DDS palette. Once
+   assets/dds-tokens.css exists these var() calls pick the tokens up with no
+   change to this file.
+   ========================================================================== */
+
+.dds-header {
+  position: relative; /* positioning context for Dawn's search modal */
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+}
+
+.dds-header--bordered {
+  border-bottom: 0.1rem solid var(--dds-line, #ededed);
+}
+
+.dds-header__inner {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  max-width: var(--dds-app-width, 52rem);
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+@media screen and (min-width: 990px) {
+  .dds-header__inner {
+    max-width: var(--dds-app-width-lg, 108rem);
+    padding-inline: 1.6rem;
+  }
+}
+
+/* Logo --------------------------------------------------------------------- */
+
+.dds-header__heading {
+  flex: none;
+  margin: 0;
+  font-size: inherit;
+  line-height: 0;
+}
+
+.dds-header__logo-link {
+  display: block;
+  color: inherit;
+  line-height: 0;
+  text-decoration: none;
+}
+
+.dds-header__logo {
+  display: block;
+  width: auto;
+  height: var(--dds-header-logo-height, 2.8rem);
+  max-width: 100%;
+}
+
+.dds-header__shop-name {
+  display: block;
+  font-family: var(--font-heading-family);
+  font-style: var(--font-heading-style);
+  font-weight: var(--font-heading-weight);
+  font-size: 1.6rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* Search pill -------------------------------------------------------------- */
+
+.dds-header__search {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.dds-header__search > details {
+  min-width: 0;
+}
+
+.dds-header__pill {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-width: 0;
+  height: 3.4rem;
+  padding: 0 1.2rem;
+  border-radius: 1.7rem;
+  background-color: var(--dds-bg, #f2f2f2);
+  color: var(--dds-muted, #8e8e8e);
+  font-size: 1.28rem;
+  line-height: 1;
+  text-align: left;
+  cursor: pointer;
+  list-style: none;
+}
+
+.dds-header__pill::-webkit-details-marker {
+  display: none;
+}
+
+.dds-header__pill-icon.svg-wrapper {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.dds-header__pill-icon .icon {
+  width: 100%;
+  height: 100%;
+}
+
+.dds-header__pill-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Icon buttons ------------------------------------------------------------- */
+/* Dawn's .header__icon already gives a 4.4rem (44px) target with a 2rem icon.
+   Only the bits that differ from Dawn are declared here. */
+
+.dds-header__icon {
+  flex: none;
+}
+
+.dds-header .header__icon--cart {
+  margin-right: 0;
+}
+
+/* Cart count badge — DDS pill instead of Dawn's circle */
+.dds-header .cart-count-bubble {
+  top: 0.6rem;
+  right: 0.6rem;
+  bottom: auto;
+  left: auto;
+  min-width: 1.6rem;
+  width: auto;
+  height: 1.6rem;
+  padding: 0 0.4rem;
+  border-radius: 0.8rem;
+  background-color: var(--dds-red, #d71e28);
+  color: var(--dds-on-red, #ffffff);
+  font-size: 0.96rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Motion ------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .dds-header .header__icon:hover .icon {
+    transform: none;
+  }
+}

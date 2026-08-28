@@ -1,0 +1,299 @@
+{% comment %}
+  DDS header — Temu-style app bar.
+  Reference: _reference/dds-home.html → <header class="bar">
+
+  Reuses Dawn wherever Dawn already does the job:
+  - `details-modal` + `predictive-search` for search (via snippets/dds-header-search.liquid)
+  - `.header__icon` for the 44px account/cart targets
+  - `#cart-icon-bubble` id + Dawn's bubble markup, so cart AJAX re-renders keep working
+  - `sticky-header` behaviour for the "on scroll up" setting
+{% endcomment %}
+
+{{ 'section-dds-header.css' | asset_url | stylesheet_tag }}
+<link rel="stylesheet" href="{{ 'component-search.css' | asset_url }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ 'component-cart-notification.css' | asset_url }}" media="print" onload="this.media='all'">
+{%- if settings.predictive_search_enabled -%}
+  <link rel="stylesheet" href="{{ 'component-price.css' | asset_url }}" media="print" onload="this.media='all'">
+{%- endif -%}
+<noscript>{{ 'component-search.css' | asset_url | stylesheet_tag }}</noscript>
+
+{%- liquid
+  assign header_tag = 'div'
+  if section.settings.sticky_header_type == 'on-scroll-up'
+    assign header_tag = 'sticky-header'
+  endif
+-%}
+
+<script src="{{ 'section-dds-header.js' | asset_url }}" defer="defer"></script>
+
+{% comment %}
+  The app bar keeps the same height at every breakpoint — that is what the
+  reference does — so padding and logo height are NOT halved on mobile the way
+  they are on content sections.
+{% endcomment %}
+{% style %}
+  .section-{{ section.id }} {
+    --dds-header-logo-height: {{ section.settings.logo_height }}px;
+    margin-bottom: {{ section.settings.margin_bottom }}px;
+  }
+
+  .section-{{ section.id }} .dds-header__inner {
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+
+  {%- if section.settings.sticky_header_type == 'always' -%}
+    #shopify-section-{{ section.id }} {
+      position: sticky;
+      top: 0;
+    }
+  {%- endif -%}
+{% endstyle %}
+
+<{{ header_tag }}
+  {%- if header_tag == 'sticky-header' %} data-sticky-type="on-scroll-up"{% endif %}
+  class="dds-header section-{{ section.id }} color-{{ section.settings.color_scheme }} gradient{% if section.settings.show_line_separator %} dds-header--bordered{% endif %}"
+>
+  <header class="dds-header__inner">
+    {%- liquid
+      assign logo_alt = settings.logo.alt | default: shop.name | escape
+      assign logo_h = section.settings.logo_height
+      assign logo_w = settings.logo.aspect_ratio | times: logo_h | round
+      assign logo_w2 = logo_w | times: 2
+      assign logo_w3 = logo_w | times: 3
+      assign logo_widths = logo_w | append: ', ' | append: logo_w2 | append: ', ' | append: logo_w3
+      assign logo_sizes = logo_w | append: 'px'
+    -%}
+
+    {%- if request.page_type == 'index' -%}
+      <h1 class="dds-header__heading">
+    {%- else -%}
+      <div class="dds-header__heading">
+    {%- endif -%}
+    <a href="{{ routes.root_url }}" class="dds-header__logo-link focus-inset">
+      {%- if settings.logo != blank -%}
+        {{
+          settings.logo
+          | image_url: width: 1000
+          | image_tag:
+            class: 'dds-header__logo',
+            widths: logo_widths,
+            sizes: logo_sizes,
+            width: logo_w,
+            height: logo_h,
+            alt: logo_alt,
+            preload: true
+        }}
+      {%- else -%}
+        <span class="dds-header__shop-name">{{ shop.name }}</span>
+      {%- endif -%}
+    </a>
+    {%- if request.page_type == 'index' -%}
+      </h1>
+    {%- else -%}
+      </div>
+    {%- endif -%}
+
+    {%- render 'dds-header-search',
+      input_id: 'Search-In-Modal',
+      placeholder: section.settings.search_placeholder
+    -%}
+
+    {%- if shop.customer_accounts_enabled -%}
+      <shopify-account
+        menu="{{ settings.customer_account_menu | default: 'customer-account-main-menu' }}"
+        class="header__icon header__icon--account dds-header__icon link focus-inset"
+      >
+        <span slot="signed-out-avatar" class="svg-wrapper">{{ 'icon-account.svg' | inline_asset_content }}</span>
+        <span slot="signed-out-avatar" class="visually-hidden">{{ 'customer.log_in' | t }}</span>
+      </shopify-account>
+    {%- endif -%}
+
+    {%- for block in section.blocks -%}
+      {%- case block.type -%}
+        {%- when '@app' -%}
+          {% render block %}
+      {%- endcase -%}
+    {%- endfor -%}
+
+    <a
+      href="{{ routes.cart_url }}"
+      class="header__icon header__icon--cart dds-header__icon dds-header__icon--cart link focus-inset"
+      id="cart-icon-bubble"
+    >
+      {%- comment -%}
+        Markup below must stay identical to sections/cart-icon-bubble.liquid — the cart
+        JS re-renders this element from that section after every add/change.
+      {%- endcomment -%}
+      {% if cart == empty %}
+        <span class="svg-wrapper">{{ 'icon-cart-empty.svg' | inline_asset_content }}</span>
+      {% else %}
+        <span class="svg-wrapper">{{ 'icon-cart.svg' | inline_asset_content }}</span>
+      {% endif %}
+      <span class="visually-hidden">{{ 'templates.cart.cart' | t }}</span>
+      {%- if cart != empty -%}
+        <div class="cart-count-bubble">
+          {%- if cart.item_count < 100 -%}
+            <span aria-hidden="true">{{ cart.item_count }}</span>
+          {%- endif -%}
+          <span class="visually-hidden">{{ 'sections.header.cart_count' | t: count: cart.item_count }}</span>
+        </div>
+      {%- endif -%}
+    </a>
+  </header>
+</{{ header_tag }}>
+
+{%- if settings.cart_type == 'notification' -%}
+  <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
+  {%- render 'cart-notification', color_scheme: section.settings.color_scheme, desktop_menu_type: 'drawer' -%}
+{%- endif -%}
+
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Organization",
+    "name": {{ shop.name | json }},
+    {% if settings.logo %}
+      "logo": {{ settings.logo | image_url: width: 500 | prepend: "https:" | json }},
+    {% endif %}
+    "sameAs": [
+      {{ settings.social_twitter_link | json }},
+      {{ settings.social_facebook_link | json }},
+      {{ settings.social_pinterest_link | json }},
+      {{ settings.social_instagram_link | json }},
+      {{ settings.social_tiktok_link | json }},
+      {{ settings.social_tumblr_link | json }},
+      {{ settings.social_snapchat_link | json }},
+      {{ settings.social_youtube_link | json }},
+      {{ settings.social_vimeo_link | json }}
+    ],
+    "url": {{ request.origin | append: page.url | json }}
+  }
+</script>
+
+{%- if request.page_type == 'index' -%}
+  {% assign potential_action_target = request.origin | append: routes.search_url | append: '?q={search_term_string}' %}
+  <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "WebSite",
+      "name": {{ shop.name | json }},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {{ potential_action_target | json }},
+        "query-input": "required name=search_term_string"
+      },
+      "url": {{ request.origin | append: page.url | json }}
+    }
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "DDS header",
+  "class": "section-header",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:sections.header.settings.logo_help.content"
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "min": 24,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Logo height",
+      "info": "Same at every breakpoint. Width follows the logo's aspect ratio.",
+      "default": 56
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search placeholder",
+      "info": "Shown inside the closed search pill.",
+      "default": "Search jars, racks, hooks…"
+    },
+    {
+      "type": "select",
+      "id": "sticky_header_type",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:sections.header.settings.sticky_header_type.options__1.label"
+        },
+        {
+          "value": "on-scroll-up",
+          "label": "t:sections.header.settings.sticky_header_type.options__2.label"
+        },
+        {
+          "value": "always",
+          "label": "t:sections.header.settings.sticky_header_type.options__3.label"
+        }
+      ],
+      "default": "always",
+      "label": "t:sections.header.settings.sticky_header_type.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_line_separator",
+      "default": true,
+      "label": "t:sections.header.settings.show_line_separator.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.header.settings.header__1.content"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.header.settings.margin_bottom.label",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 36,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 36,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 8
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    }
+  ]
+}
+{% endschema %}
