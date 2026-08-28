@@ -24,15 +24,10 @@
   display: flex;
   align-items: stretch;
   overflow: hidden;
+  border-radius: var(--dds-card-radius, 0);
   background: linear-gradient(90deg, var(--dds-red, #d71e28), var(--dds-red-2, #f0562a));
   color: var(--dds-on-red, #ffffff);
   font-size: 1.248rem;
-}
-
-@media screen and (min-width: 990px) {
-  .dds-savings__bar {
-    border-radius: var(--dds-radius, 0.8rem);
-  }
 }
 
 /* Tag ---------------------------------------------------------------------- */

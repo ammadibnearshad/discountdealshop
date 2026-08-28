@@ -19,16 +19,11 @@
 
 .dds-hero__card {
   position: relative;
+  display: block;
   overflow: hidden;
+  border-radius: var(--dds-card-radius, 0);
   background-color: rgb(var(--color-background));
   color: rgb(var(--color-foreground));
-  display: block;
-}
-
-@media screen and (min-width: 990px) {
-  .dds-hero__card {
-    border-radius: var(--dds-radius, 0.8rem);
-  }
 }
 
 /* Track -------------------------------------------------------------------- */

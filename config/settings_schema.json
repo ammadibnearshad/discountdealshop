@@ -102,6 +102,161 @@
     ]
   },
   {
+    "name": "DDS design system",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Tokens shared by every DDS section. Dawn's own color schemes still control each card's background and text — these cover what Dawn has no concept of."
+      },
+      {
+        "type": "header",
+        "content": "Page"
+      },
+      {
+        "type": "color",
+        "id": "dds_page_background",
+        "label": "Page background",
+        "default": "#F2F2F2",
+        "info": "The grey ground the white cards sit on."
+      },
+      {
+        "type": "range",
+        "id": "dds_container_width_mobile",
+        "min": 320,
+        "max": 720,
+        "step": 20,
+        "unit": "px",
+        "label": "Container width (mobile)",
+        "default": 520
+      },
+      {
+        "type": "range",
+        "id": "dds_container_width",
+        "min": 800,
+        "max": 1400,
+        "step": 20,
+        "unit": "px",
+        "label": "Container width (desktop)",
+        "default": 1080,
+        "info": "Applies from 990px up."
+      },
+      {
+        "type": "range",
+        "id": "dds_card_radius",
+        "min": 0,
+        "max": 24,
+        "step": 2,
+        "unit": "px",
+        "label": "Card corner radius",
+        "default": 8
+      },
+      {
+        "type": "checkbox",
+        "id": "dds_card_radius_mobile",
+        "default": false,
+        "label": "Round cards on mobile too",
+        "info": "Off matches the reference — cards run edge to edge on phones and gain corners from 990px."
+      },
+      {
+        "type": "header",
+        "content": "Money and urgency"
+      },
+      {
+        "type": "paragraph",
+        "content": "Reserved for price, savings, % off, countdowns and primary CTAs. Do not use these anywhere else."
+      },
+      {
+        "type": "color",
+        "id": "dds_red",
+        "label": "Value red",
+        "default": "#D71E28"
+      },
+      {
+        "type": "color",
+        "id": "dds_red_2",
+        "label": "Gradient partner",
+        "default": "#F0562A",
+        "info": "The second stop in savings and CTA gradients."
+      },
+      {
+        "type": "color",
+        "id": "dds_on_red",
+        "label": "Text on red",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "color",
+        "id": "dds_hot",
+        "label": "Urgency chip tint",
+        "default": "#FFF1EC"
+      },
+      {
+        "type": "color",
+        "id": "dds_bolt",
+        "label": "Savings bolt",
+        "default": "#FFD9A0"
+      },
+      {
+        "type": "header",
+        "content": "Text and lines"
+      },
+      {
+        "type": "color",
+        "id": "dds_ink",
+        "label": "Ink",
+        "default": "#1A1A1A"
+      },
+      {
+        "type": "color",
+        "id": "dds_ink_2",
+        "label": "Ink, secondary",
+        "default": "#5C5C5C"
+      },
+      {
+        "type": "color",
+        "id": "dds_muted",
+        "label": "Muted",
+        "default": "#8E8E8E"
+      },
+      {
+        "type": "color",
+        "id": "dds_navy",
+        "label": "Deal navy",
+        "default": "#12294B",
+        "info": "Secondary text accents and line art."
+      },
+      {
+        "type": "color",
+        "id": "dds_line",
+        "label": "Hairline",
+        "default": "#EDEDED"
+      },
+      {
+        "type": "color",
+        "id": "dds_line_2",
+        "label": "Hairline, stronger",
+        "default": "#DCDCDC"
+      },
+      {
+        "type": "header",
+        "content": "Surfaces and status"
+      },
+      {
+        "type": "color",
+        "id": "dds_wash",
+        "label": "Product image ground",
+        "default": "#F6F5F3"
+      },
+      {
+        "type": "color",
+        "id": "dds_green",
+        "label": "Delivery / COD green",
+        "default": "#00875A",
+        "info": "Confirmations only — free delivery, cash on delivery, returns."
+      }
+    ]
+  },
+  {
     "name": "t:settings_schema.typography.name",
     "settings": [
       {

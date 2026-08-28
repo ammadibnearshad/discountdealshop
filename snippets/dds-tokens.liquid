@@ -1,0 +1,65 @@
+{% comment %}
+  DDS design tokens.
+
+  Emits the shared custom properties every DDS section reads, from the
+  "DDS design system" panel in theme settings. Rendered from theme.liquid
+  immediately after base.css so the body rule below outranks Dawn's
+  `.gradient` (0-1-0 vs this file's 0-1-1) without needing !important.
+
+  This replaces the planned static assets/dds-tokens.css — a stylesheet in
+  assets/ cannot read theme settings, and every token here has to be
+  merchant-editable.
+
+  Section CSS keeps hardcoded fallbacks in its var() calls, so a section still
+  renders correctly if this snippet is ever removed.
+{% endcomment %}
+
+{% style %}
+  :root {
+    /* Money and urgency — price, savings, countdowns, primary CTAs only. */
+    --dds-red: {{ settings.dds_red }};
+    --dds-red-2: {{ settings.dds_red_2 }};
+    --dds-on-red: {{ settings.dds_on_red }};
+    --dds-hot: {{ settings.dds_hot }};
+    --dds-bolt: {{ settings.dds_bolt }};
+
+    /* Text and lines */
+    --dds-ink: {{ settings.dds_ink }};
+    --dds-ink-2: {{ settings.dds_ink_2 }};
+    --dds-muted: {{ settings.dds_muted }};
+    --dds-navy: {{ settings.dds_navy }};
+    --dds-line: {{ settings.dds_line }};
+    --dds-line-2: {{ settings.dds_line_2 }};
+
+    /* Surfaces and status */
+    --dds-bg: {{ settings.dds_page_background }};
+    --dds-wash: {{ settings.dds_wash }};
+    --dds-green: {{ settings.dds_green }};
+
+    /* Layout */
+    --dds-app-width: {{ settings.dds_container_width_mobile }}px;
+    --dds-app-width-lg: {{ settings.dds_container_width }}px;
+    --dds-radius: {{ settings.dds_card_radius }}px;
+    --dds-radius-sm: calc(var(--dds-radius) / 2);
+
+    /* Cards run edge to edge on phones unless the merchant opts in, then pick
+       up corners at the desktop breakpoint. Sections read this one and need no
+       media query of their own. */
+    --dds-card-radius: {% if settings.dds_card_radius_mobile %}var(--dds-radius){% else %}0px{% endif %};
+  }
+
+  @media screen and (min-width: 990px) {
+    :root {
+      --dds-card-radius: var(--dds-radius);
+    }
+  }
+
+  /* The grey ground the cards sit on. Deliberately not wired into Dawn's
+     scheme-1: that scheme is also the default for the header and every card,
+     so turning it grey would grey those too. Overriding .gradient here also
+     drops Dawn's `background-attachment: fixed`, which is a scroll-jank
+     source on mid-range Android. */
+  body.gradient {
+    background: var(--dds-bg);
+  }
+{% endstyle %}

@@ -287,6 +287,9 @@
     {% endstyle %}
 
     {{ 'base.css' | asset_url | stylesheet_tag }}
+
+    {%- comment -%} DDS: shared design tokens. Must come after base.css. {%- endcomment -%}
+    {%- render 'dds-tokens' -%}
     <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
 
     {%- if settings.cart_type == 'drawer' -%}
