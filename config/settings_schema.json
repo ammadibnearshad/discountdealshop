@@ -253,6 +253,17 @@
         "label": "Delivery / COD green",
         "default": "#00875A",
         "info": "Confirmations only — free delivery, cash on delivery, returns."
+      },
+      {
+        "type": "header",
+        "content": "WhatsApp ordering"
+      },
+      {
+        "type": "text",
+        "id": "dds_whatsapp_number",
+        "label": "WhatsApp number",
+        "info": "International format, e.g. +923001234567. Leave blank to hide every WhatsApp button.",
+        "default": ""
       }
     ]
   },

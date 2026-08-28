@@ -1,0 +1,72 @@
+{% doc %}
+  DDS product gallery — swipeable stage with a counter pill.
+
+  Deliberately not Dawn's <media-gallery>: that ships thumbnails, a zoom modal
+  and a 3D/video viewer this design does not use. Per the brief there are no
+  colour swatches over the image and no share button — the counter is the only
+  overlay.
+
+  @param {object} product - Product to render (required)
+  @param {string} section_id - Owning section id (required)
+{% enddoc %}
+
+{%- liquid
+  assign media_items = product.media
+  assign media_count = media_items.size
+-%}
+
+<dds-gallery class="dds-gallery" data-media-count="{{ media_count }}">
+  {%- if media_count > 0 -%}
+    <div
+      class="dds-gallery__track"
+      id="DdsGallery-{{ section_id }}"
+      data-gallery-track
+      role="group"
+      aria-roledescription="{{ 'sections.slideshow.carousel' | t }}"
+      aria-label="{{ product.title | escape }}"
+    >
+      {%- for media in media_items -%}
+        {%- liquid
+          assign img_loading = 'lazy'
+          assign img_priority = 'auto'
+          if forloop.first
+            assign img_loading = 'eager'
+            assign img_priority = 'high'
+          endif
+          assign img_alt = media.alt | default: product.title | escape
+        -%}
+        <div
+          class="dds-gallery__slide"
+          role="group"
+          aria-roledescription="{{ 'sections.slideshow.slide' | t }}"
+          aria-label="{{ forloop.index }} {{ 'general.slider.of' | t }} {{ media_count }}"
+        >
+          {{
+            media
+            | image_url: width: 1500
+            | image_tag:
+              class: 'dds-gallery__image',
+              widths: '375, 550, 750, 1100, 1500',
+              sizes: '(min-width: 990px) 520px, 100vw',
+              alt: img_alt,
+              loading: img_loading,
+              fetchpriority: img_priority
+          }}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if media_count > 1 -%}
+      {%- comment -%}
+        Live region so the count is announced on swipe, not just seen.
+      {%- endcomment -%}
+      <span class="dds-gallery__counter" aria-live="polite" data-gallery-counter>
+        <span data-gallery-index>1</span>/{{ media_count }}
+      </span>
+    {%- endif -%}
+  {%- else -%}
+    <div class="dds-gallery__slide">
+      {{ 'product-1' | placeholder_svg_tag: 'dds-gallery__placeholder' }}
+    </div>
+  {%- endif -%}
+</dds-gallery>

@@ -1,0 +1,616 @@
+{% comment %}
+  DDS main product — gallery + savings on the left, everything else as blocks
+  on the right.
+  Reference: _reference/dds-product.html → .app > .col-a / .col-b
+
+  Wrapped in Dawn's <product-info> so variant changes, URL updates and section
+  re-rendering all keep working. Variant picker, quantity input and buy buttons
+  are Dawn's own snippets, restyled — reimplementing variant logic would be the
+  riskiest thing in this build.
+
+  Mobile is the reference's single-column stack with a fixed bottom CTA bar.
+{% endcomment %}
+
+{{ 'section-dds-main-product.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'section-dds-main-product.js' | asset_url }}" defer="defer"></script>
+
+{%- liquid
+  assign product_form_id = 'product-form-' | append: section.id
+  assign variant = product.selected_or_first_available_variant
+
+  assign sold_raw = product.metafields.custom.units_sold.value | plus: 0
+
+  assign rating = ''
+  if product.metafields.reviews.rating.value != blank
+    assign rating = product.metafields.reviews.rating.value.rating | round: 1
+  endif
+
+  assign on_sale = false
+  assign percent_off = 0
+  if variant.compare_at_price > variant.price
+    assign on_sale = true
+    assign saving = variant.compare_at_price | minus: variant.price | times: 100.0
+    assign percent_off = saving | divided_by: variant.compare_at_price | round
+  endif
+
+  assign show_urgency = false
+  if section.settings.urgency_label != blank and variant.inventory_management != blank and variant.inventory_policy == 'deny'
+    if variant.inventory_quantity > 0 and variant.inventory_quantity <= section.settings.urgency_threshold
+      assign show_urgency = true
+    endif
+  endif
+
+  assign sale_ends = product.metafields.custom.sale_ends_at.value
+-%}
+
+{% style %}
+  .section-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top | divided_by: 2 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | divided_by: 2 }}px;
+  }
+
+  @media screen and (min-width: 990px) {
+    .section-{{ section.id }} {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{% endstyle %}
+
+<product-info
+  id="MainProduct-{{ section.id }}"
+  class="dds-pdp section-{{ section.id }}"
+  data-section="{{ section.id }}"
+  data-product-id="{{ product.id }}"
+  data-update-url="true"
+  data-url="{{ product.url }}"
+>
+  <div class="dds-pdp__grid">
+    {%- comment -%} Left column: gallery, then the savings strip. {%- endcomment -%}
+    <div class="dds-pdp__col-a">
+      {%- render 'dds-product-gallery', product: product, section_id: section.id -%}
+
+      {%- if section.settings.savings_items != blank -%}
+        <dds-rotator
+          class="dds-pdp__savings"
+          data-rotate-speed="{{ section.settings.savings_rotate_speed }}"
+        >
+          {%- if section.settings.savings_tag != blank -%}
+            <span class="dds-pdp__savings-tag">
+              {%- render 'icon-dds-bolt' -%}
+              {{ section.settings.savings_tag | escape }}
+            </span>
+          {%- endif -%}
+          <ul class="dds-pdp__savings-items dds-rotator__track" role="list" data-rotator-items>
+            {%- assign savings = section.settings.savings_items | split: ',' -%}
+            {%- for item in savings -%}
+              {%- assign trimmed = item | strip -%}
+              {%- if trimmed != blank -%}
+                <li class="dds-pdp__savings-item{% if forloop.first %} is-active{% endif %}">
+                  {%- render 'icon-dds-check' -%}
+                  {{ trimmed | escape }}
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+        </dds-rotator>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Right column: every element is a block. {%- endcomment -%}
+    <div class="dds-pdp__col-b">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+
+          {%- when 'title' -%}
+            <div class="dds-pdp__card" {{ block.shopify_attributes }}>
+              <h1 class="dds-pdp__title">{{ product.title | escape }}</h1>
+              <div class="dds-pdp__meta">
+                <span class="dds-pdp__meta-left">
+                  {%- if block.settings.show_sold and sold_raw > 0 -%}
+                    {%- liquid
+                      if sold_raw >= 1000
+                        assign sold_label = sold_raw | divided_by: 1000 | append: 'K+'
+                      else
+                        assign sold_label = sold_raw | append: '+'
+                      endif
+                    -%}
+                    <span class="dds-pdp__sold">{{ sold_label }} {{ block.settings.sold_text | escape }}</span>
+                  {%- endif -%}
+                  {%- if block.settings.show_seller -%}
+                    {%- if block.settings.show_sold and sold_raw > 0 -%}
+                      <span class="dds-pdp__sep" aria-hidden="true">|</span>
+                    {%- endif -%}
+                    <span class="dds-pdp__seller">
+                      {{ block.settings.seller_prefix | escape }} {{ shop.name }}
+                      {%- render 'icon-dds-chevron-right' -%}
+                    </span>
+                  {%- endif -%}
+                </span>
+                {%- if block.settings.show_rating and rating != blank -%}
+                  <span
+                    class="dds-pdp__rating"
+                    aria-label="{{ 'accessibility.star_reviews_info' | t: rating_value: rating, rating_max: product.metafields.reviews.rating.value.scale_max }}"
+                  >
+                    {{- rating -}}
+                  </span>
+                {%- endif -%}
+              </div>
+            </div>
+
+          {%- when 'price' -%}
+            <div class="dds-pdp__card" {{ block.shopify_attributes }}>
+              <div class="dds-pdp__price-row">
+                {%- if on_sale -%}
+                  <span class="visually-hidden">{{ 'products.product.price.sale_price' | t }}</span>
+                  <s class="dds-pdp__was" aria-hidden="true">
+                    {{- variant.compare_at_price | money_without_currency -}}
+                  </s>
+                {%- endif -%}
+                <span class="dds-pdp__now">{{ variant.price | money }}</span>
+                {%- if on_sale -%}
+                  <span class="visually-hidden">
+                    {{ 'products.product.price.regular_price' | t }} {{ variant.compare_at_price | money }}
+                  </span>
+                  {%- if block.settings.off_badge_label != blank -%}
+                    <span class="dds-pdp__off">
+                      {{- percent_off }}{{ block.settings.off_badge_label | escape -}}
+                    </span>
+                  {%- endif -%}
+                {%- endif -%}
+              </div>
+              {%- if show_urgency -%}
+                <span class="dds-pdp__hot">
+                  {%- render 'icon-dds-bolt' -%}
+                  {{ section.settings.urgency_label | escape }}
+                </span>
+              {%- endif -%}
+            </div>
+
+          {%- when 'countdown' -%}
+            {%- comment -%}
+              Driven by the custom.sale_ends_at metafield. No metafield, no bar —
+              never a rolling fake deadline.
+            {%- endcomment -%}
+            {%- if sale_ends != blank -%}
+              <dds-countdown
+                class="dds-pdp__sale"
+                data-ends-at="{{ sale_ends | date: '%Y-%m-%dT%H:%M:%S%z' }}"
+                {{ block.shopify_attributes }}
+              >
+                <span class="dds-pdp__sale-label">{{ block.settings.label | escape }}</span>
+                <span class="dds-pdp__sale-line" aria-hidden="true"><i data-countdown-bar></i></span>
+                <span class="dds-pdp__sale-clock">
+                  {{ block.settings.ends_label | escape }}
+                  <b class="dds-pdp__sale-time" data-countdown-time>--:--:--</b>
+                </span>
+              </dds-countdown>
+            {%- endif -%}
+
+          {%- when 'variant_picker' -%}
+            <div class="dds-pdp__card dds-pdp__options" {{ block.shopify_attributes }}>
+              {%- render 'product-variant-picker',
+                product: product,
+                block: block,
+                product_form_id: product_form_id
+              -%}
+            </div>
+
+          {%- when 'quantity' -%}
+            <div class="dds-pdp__card dds-pdp__qty-card" {{ block.shopify_attributes }}>
+              <div class="dds-pdp__qty-row">
+                {%- comment -%}
+                  Dawn's `quantity-input` snippet is the cart one — it posts
+                  updates[id]. The product form needs name="quantity" bound to
+                  the form by id, so this mirrors Dawn's own main-product markup.
+                {%- endcomment -%}
+                <label class="visually-hidden" for="DdsQuantity-{{ section.id }}">
+                  {{- 'products.product.quantity.label' | t -}}
+                </label>
+                <quantity-input class="quantity dds-pdp__qty" data-url="{{ product.url }}" data-section="{{ section.id }}">
+                  <button class="quantity__button" name="minus" type="button">
+                    <span class="visually-hidden">
+                      {{- 'products.product.quantity.decrease' | t: product: product.title | escape -}}
+                    </span>
+                    <span class="svg-wrapper">{{- 'icon-minus.svg' | inline_asset_content -}}</span>
+                  </button>
+                  <input
+                    class="quantity__input"
+                    type="number"
+                    name="quantity"
+                    id="DdsQuantity-{{ section.id }}"
+                    data-min="{{ variant.quantity_rule.min }}"
+                    min="{{ variant.quantity_rule.min }}"
+                    {% if variant.quantity_rule.max != null %}
+                      data-max="{{ variant.quantity_rule.max }}"
+                      max="{{ variant.quantity_rule.max }}"
+                    {% endif %}
+                    step="{{ variant.quantity_rule.increment }}"
+                    value="{{ variant.quantity_rule.min }}"
+                    form="{{ product_form_id }}"
+                  >
+                  <button class="quantity__button" name="plus" type="button">
+                    <span class="visually-hidden">
+                      {{- 'products.product.quantity.increase' | t: product: product.title | escape -}}
+                    </span>
+                    <span class="svg-wrapper">{{- 'icon-plus.svg' | inline_asset_content -}}</span>
+                  </button>
+                </quantity-input>
+                {%- if variant.quantity_price_breaks.size > 0 -%}
+                  {%- comment -%}
+                    Real volume pricing from the variant's quantity price breaks.
+                    Nothing is invented.
+                  {%- endcomment -%}
+                  {%- assign next_break = variant.quantity_price_breaks | sort: 'minimum_quantity' | first -%}
+                  {%- assign break_saving = variant.price | minus: next_break.price -%}
+                  <span class="dds-pdp__bulk">
+                    {{ block.settings.bulk_prefix | escape }}
+                    {{ next_break.minimum_quantity }}
+                    {{ block.settings.bulk_middle | escape }}
+                    {{ break_saving | money }}
+                  </span>
+                {%- endif -%}
+              </div>
+            </div>
+
+          {%- when 'buy_buttons' -%}
+            <div class="dds-pdp__cta" {{ block.shopify_attributes }}>
+              <div class="dds-pdp__cta-inner">
+                {%- if block.settings.show_whatsapp and settings.dds_whatsapp_number != blank -%}
+                  {%- liquid
+                    assign wa_number = settings.dds_whatsapp_number | remove: ' ' | remove: '+' | remove: '-'
+                    assign wa_price = variant.price | money
+                    assign wa_url = request.origin | append: product.url
+                    assign wa_text = block.settings.whatsapp_message
+                    assign wa_text = wa_text | replace: '[product]', product.title
+                    assign wa_text = wa_text | replace: '[variant]', variant.title
+                    assign wa_text = wa_text | replace: '[price]', wa_price
+                    assign wa_text = wa_text | replace: '[url]', wa_url
+                    # Encode only the message — encoding the whole href would break the scheme.
+                    assign wa_text = wa_text | url_encode
+                    assign wa_href = 'https://wa.me/' | append: wa_number | append: '?text=' | append: wa_text
+                  -%}
+                  <a
+                    class="dds-pdp__wa"
+                    href="{{ wa_href }}"
+                    target="_blank"
+                    rel="noopener"
+                    aria-label="{{ block.settings.whatsapp_label | escape }}"
+                  >
+                    {%- render 'icon-dds-whatsapp' -%}
+                  </a>
+                {%- endif -%}
+
+                {%- render 'buy-buttons',
+                  block: block,
+                  product: product,
+                  product_form_id: product_form_id,
+                  section_id: section.id,
+                  show_pickup_availability: false
+                -%}
+              </div>
+            </div>
+
+          {%- when 'delivery' -%}
+            <div class="dds-pdp__card" {{ block.shopify_attributes }}>
+              <div class="dds-pdp__blockhead">
+                <h2>{{ block.settings.heading | escape }}</h2>
+              </div>
+
+              {%- if block.settings.city_estimates != blank -%}
+                <dds-delivery-estimate class="dds-pdp__line">
+                  {%- render 'icon-dds-truck' -%}
+                  <span class="dds-pdp__line-body">
+                    <b class="dds-pdp__free">{{ block.settings.delivery_lead | escape }}</b>
+                    {{ block.settings.delivery_rest | escape }}
+
+                    <label class="visually-hidden" for="DdsCity-{{ section.id }}">
+                      {{- block.settings.city_label | escape -}}
+                    </label>
+                    <select class="dds-pdp__city" id="DdsCity-{{ section.id }}" data-city-select>
+                      {%- assign city_rows = block.settings.city_estimates | newline_to_br | split: '<br />' -%}
+                      {%- for row in city_rows -%}
+                        {%- assign parts = row | strip | split: '|' -%}
+                        {%- if parts.size == 2 -%}
+                          <option value="{{ parts[1] | strip | escape }}">{{ parts[0] | strip | escape }}</option>
+                        {%- endif -%}
+                      {%- endfor -%}
+                    </select>
+
+                    <span class="dds-pdp__eta" data-city-output>
+                      {{ block.settings.eta_prefix | escape }}
+                      <b data-city-days></b>
+                      {{ block.settings.eta_middle | escape }}
+                      <b data-city-name></b>
+                      {%- if block.settings.late_credit != blank -%}
+                        <span aria-hidden="true"> &middot; </span>
+                        <span class="dds-pdp__free">{{ block.settings.late_credit | escape }}</span>
+                      {%- endif -%}
+                    </span>
+                  </span>
+                </dds-delivery-estimate>
+              {%- endif -%}
+
+              {%- if block.settings.cod_text != blank -%}
+                <p class="dds-pdp__line">
+                  {%- render 'icon-dds-card' -%}
+                  <span class="dds-pdp__line-body">
+                    <b>{{ block.settings.cod_lead | escape }}</b> {{ block.settings.cod_text | escape }}
+                  </span>
+                </p>
+              {%- endif -%}
+
+              {%- if block.settings.returns_text != blank -%}
+                <p class="dds-pdp__line">
+                  {%- render 'icon-dds-return' -%}
+                  <span class="dds-pdp__line-body">
+                    <b>{{ block.settings.returns_lead | escape }}</b> {{ block.settings.returns_text | escape }}
+                  </span>
+                </p>
+              {%- endif -%}
+            </div>
+
+          {%- when 'store' -%}
+            <div class="dds-pdp__card" {{ block.shopify_attributes }}>
+              <div class="dds-pdp__store">
+                {%- if settings.logo != blank -%}
+                  <span class="dds-pdp__store-avatar">
+                    {{ settings.logo | image_url: width: 120 | image_tag: alt: '', loading: 'lazy' }}
+                  </span>
+                {%- endif -%}
+                <span class="dds-pdp__store-text">
+                  <b>{{ shop.name }}</b>
+                  {%- if block.settings.store_meta != blank -%}
+                    <span>{{ block.settings.store_meta | escape }}</span>
+                  {%- endif -%}
+                </span>
+                {%- if block.settings.follow_url != blank -%}
+                  <a class="dds-pdp__follow" href="{{ block.settings.follow_url }}">
+                    {{- block.settings.follow_label | escape -}}
+                  </a>
+                {%- endif -%}
+              </div>
+            </div>
+
+          {%- when '@app' -%}
+            {% render block %}
+
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</product-info>
+
+{% schema %}
+{
+  "name": "DDS main product",
+  "tag": "section",
+  "class": "dds-pdp-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Savings strip"
+    },
+    {
+      "type": "text",
+      "id": "savings_tag",
+      "label": "Tag label",
+      "info": "The bolt chip at the start. Leave blank to hide it.",
+      "default": "SAVINGS"
+    },
+    {
+      "type": "text",
+      "id": "savings_items",
+      "label": "Promises",
+      "info": "Comma separated. Rotates one at a time on mobile.",
+      "default": "Free delivery, Rs 200 credit if late, Cash on Delivery"
+    },
+    {
+      "type": "range",
+      "id": "savings_rotate_speed",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "unit": "s",
+      "label": "Change promise every",
+      "default": 3
+    },
+    {
+      "type": "header",
+      "content": "Urgency"
+    },
+    {
+      "type": "paragraph",
+      "content": "Driven by real tracked inventory. Products with inventory tracking off, or with \"continue selling when out of stock\" on, never show the chip."
+    },
+    {
+      "type": "text",
+      "id": "urgency_label",
+      "label": "Low stock chip",
+      "info": "Leave blank to hide the chip entirely.",
+      "default": "ALMOST SOLD OUT"
+    },
+    {
+      "type": "range",
+      "id": "urgency_threshold",
+      "min": 1,
+      "max": 50,
+      "step": 1,
+      "unit": "pcs",
+      "label": "Show chip at or below",
+      "default": 25
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 8
+    }
+  ],
+  "blocks": [
+    {
+      "type": "title",
+      "name": "Title and rating",
+      "limit": 1,
+      "settings": [
+        { "type": "checkbox", "id": "show_sold", "default": true, "label": "Show units sold",
+          "info": "Reads the custom.units_sold metafield. Hidden when the product has none." },
+        { "type": "text", "id": "sold_text", "label": "Units sold suffix", "default": "sold" },
+        { "type": "checkbox", "id": "show_seller", "default": true, "label": "Show seller line" },
+        { "type": "text", "id": "seller_prefix", "label": "Seller prefix", "default": "Sold by" },
+        { "type": "checkbox", "id": "show_rating", "default": true, "label": "Show rating",
+          "info": "Reads the reviews rating metafield." }
+      ]
+    },
+    {
+      "type": "price",
+      "name": "Price",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "off_badge_label", "label": "Discount badge suffix",
+          "info": "The percentage is calculated from the compare-at price and prepended.",
+          "default": "% OFF limited time" }
+      ]
+    },
+    {
+      "type": "countdown",
+      "name": "Sale countdown",
+      "limit": 1,
+      "settings": [
+        { "type": "paragraph", "content": "Reads the custom.sale_ends_at metafield. The bar is hidden entirely when a product has no end date — it never invents a deadline." },
+        { "type": "text", "id": "label", "label": "Label", "default": "Big sale" },
+        { "type": "text", "id": "ends_label", "label": "Countdown prefix", "default": "Ends in" }
+      ]
+    },
+    {
+      "type": "variant_picker",
+      "name": "t:sections.main-product.blocks.variant_picker.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "picker_type",
+          "options": [
+            { "value": "dropdown", "label": "t:sections.main-product.blocks.variant_picker.settings.picker_type.options__1.label" },
+            { "value": "button", "label": "t:sections.main-product.blocks.variant_picker.settings.picker_type.options__2.label" }
+          ],
+          "default": "button",
+          "label": "t:sections.main-product.blocks.variant_picker.settings.picker_type.label"
+        },
+        {
+          "type": "select",
+          "id": "swatch_shape",
+          "options": [
+            { "value": "circle", "label": "t:sections.main-product.blocks.variant_picker.settings.swatch_shape.options__1.label" },
+            { "value": "square", "label": "t:sections.main-product.blocks.variant_picker.settings.swatch_shape.options__2.label" },
+            { "value": "none", "label": "t:sections.main-product.blocks.variant_picker.settings.swatch_shape.options__3.label" }
+          ],
+          "default": "square",
+          "label": "t:sections.main-product.blocks.variant_picker.settings.swatch_shape.label"
+        }
+      ]
+    },
+    {
+      "type": "quantity",
+      "name": "Quantity",
+      "limit": 1,
+      "settings": [
+        { "type": "paragraph", "content": "The multi-buy hint reads the variant's real volume pricing. It is hidden when no price breaks are configured." },
+        { "type": "text", "id": "bulk_prefix", "label": "Multi-buy prefix", "default": "Buy" },
+        { "type": "text", "id": "bulk_middle", "label": "Multi-buy middle", "default": "or more — save" }
+      ]
+    },
+    {
+      "type": "buy_buttons",
+      "name": "t:sections.main-product.blocks.buy_buttons.name",
+      "limit": 1,
+      "settings": [
+        { "type": "checkbox", "id": "show_dynamic_checkout", "default": false,
+          "label": "t:sections.main-product.blocks.buy_buttons.settings.show_dynamic_checkout.label",
+          "info": "Off by default — dynamic checkout surfaces PayPal and Shop Pay, which this store does not use." },
+        { "type": "checkbox", "id": "show_gift_card_recipient", "default": false,
+          "label": "t:sections.main-product.blocks.buy_buttons.settings.show_gift_card_recipient.label" },
+        { "type": "checkbox", "id": "show_whatsapp", "default": true, "label": "Show WhatsApp button",
+          "info": "Needs a WhatsApp number in Theme settings → DDS design system." },
+        { "type": "text", "id": "whatsapp_label", "label": "WhatsApp button label", "default": "Order on WhatsApp" },
+        { "type": "textarea", "id": "whatsapp_message", "label": "WhatsApp message",
+          "info": "Placeholders: [product], [variant], [price], [url]",
+          "default": "Hi! I want to order [product] ([variant]) for [price]. [url]" }
+      ]
+    },
+    {
+      "type": "delivery",
+      "name": "Delivery and returns",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Delivery" },
+        { "type": "text", "id": "delivery_lead", "label": "Delivery lead", "default": "Free delivery" },
+        { "type": "text", "id": "delivery_rest", "label": "Delivery rest", "default": "all over Pakistan" },
+        { "type": "text", "id": "city_label", "label": "City selector label", "default": "Select your city" },
+        { "type": "textarea", "id": "city_estimates", "label": "City estimates",
+          "info": "One per line, as City|days. Example: Karachi|2–3",
+          "default": "Karachi|2–3\nLahore|2–3\nIslamabad / Rawalpindi|2–3\nFaisalabad|3–4\nMultan|3–4\nPeshawar|3–5\nQuetta|4–6\nOther city|3–5" },
+        { "type": "text", "id": "eta_prefix", "label": "Estimate prefix", "default": "Arrives in" },
+        { "type": "text", "id": "eta_middle", "label": "Estimate middle", "default": "working days to" },
+        { "type": "text", "id": "late_credit", "label": "Late credit note", "default": "Rs 200 credit if late" },
+        { "type": "text", "id": "cod_lead", "label": "COD lead", "default": "Cash on Delivery." },
+        { "type": "textarea", "id": "cod_text", "label": "COD text",
+          "default": "Open the parcel and check every item in front of the rider before paying." },
+        { "type": "text", "id": "returns_lead", "label": "Returns lead", "default": "7-day free return" },
+        { "type": "textarea", "id": "returns_text", "label": "Returns text",
+          "default": "on damaged, defective or wrong items — we arrange the pickup." }
+      ]
+    },
+    {
+      "type": "store",
+      "name": "Store card",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "store_meta", "label": "Store meta line",
+          "info": "A merchant-entered claim, not derived data. Keep it accurate.",
+          "default": "4.7 store rating · 12,000+ orders" },
+        { "type": "text", "id": "follow_label", "label": "Follow button label", "default": "Follow" },
+        { "type": "url", "id": "follow_url", "label": "Follow button link",
+          "info": "Leave blank to hide the button." }
+      ]
+    },
+    { "type": "@app" }
+  ],
+  "presets": [
+    {
+      "name": "DDS main product",
+      "blocks": [
+        { "type": "title" },
+        { "type": "price" },
+        { "type": "countdown" },
+        { "type": "variant_picker" },
+        { "type": "quantity" },
+        { "type": "buy_buttons" },
+        { "type": "delivery" },
+        { "type": "store" }
+      ]
+    }
+  ]
+}
+{% endschema %}
