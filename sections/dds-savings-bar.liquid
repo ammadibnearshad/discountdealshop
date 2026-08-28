@@ -9,7 +9,8 @@
 {% endcomment %}
 
 {{ 'section-dds-savings-bar.css' | asset_url | stylesheet_tag }}
-<script src="{{ 'section-dds-savings-bar.js' | asset_url }}" defer="defer"></script>
+{{ 'dds-rotator.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'dds-rotator.js' | asset_url }}" defer="defer"></script>
 
 {% style %}
   .section-{{ section.id }} {
@@ -26,7 +27,7 @@
 {% endstyle %}
 
 <div class="dds-savings section-{{ section.id }}">
-  <dds-savings-bar class="dds-savings__bar" data-rotate-speed="{{ section.settings.rotate_speed }}">
+  <dds-rotator class="dds-savings__bar" data-rotate-speed="{{ section.settings.rotate_speed }}">
     {%- if section.settings.tag_label != blank -%}
       <span class="dds-savings__tag">
         {%- render 'icon-dds-bolt' -%}
@@ -40,10 +41,10 @@
         are only visually faded out, so screen readers still announce all of
         them and nothing depends on the timer running.
       {%- endcomment -%}
-      <ul class="dds-savings__items" role="list" data-savings-items>
+      <ul class="dds-savings__items dds-rotator__track" role="list" data-rotator-items>
         {%- for block in section.blocks -%}
           <li
-            class="dds-savings__item{% if forloop.first %} dds-savings__item--active{% endif %}"
+            class="dds-savings__item{% if forloop.first %} is-active{% endif %}"
             {{ block.shopify_attributes }}
           >
             {%- render 'icon-dds-check' -%}
@@ -52,7 +53,7 @@
         {%- endfor -%}
       </ul>
     {%- endif -%}
-  </dds-savings-bar>
+  </dds-rotator>
 </div>
 
 {% schema %}

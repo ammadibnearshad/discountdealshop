@@ -53,10 +53,9 @@
 }
 
 /* Items --------------------------------------------------------------------
-   Row of promises from 750px up. Below that they stack into a single grid cell
-   and cross-fade upward one at a time, driven by section-dds-savings-bar.js.
-   The layout switch lives in CSS rather than JS so it is already correct on
-   first paint — JS only owns the timer. */
+   Row of promises from 750px up. Below that dds-rotator.css stacks them and
+   <dds-rotator> cross-fades one at a time. The layout switch lives in CSS
+   rather than JS so it is already correct on first paint. */
 
 .dds-savings__items {
   display: flex;
@@ -81,43 +80,8 @@
   white-space: nowrap;
 }
 
-/* One at a time on mobile. Every item shares grid cell 1/1, so the strip is
-   as tall as the tallest promise and nothing is clipped. */
-@media screen and (max-width: 749px) {
-  .dds-savings__items {
-    display: grid;
-    gap: 0;
-    overflow: hidden;
-  }
-
-  .dds-savings__item {
-    grid-area: 1 / 1;
-    opacity: 0;
-    transform: translateY(0.8rem);
-    transition: opacity 0.45s ease, transform 0.45s ease;
-  }
-
-  .dds-savings__item--active {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Reduced motion: fall back to the scrollable row rather than hiding two of
-   three promises behind an animation that never plays. */
-@media screen and (max-width: 749px) and (prefers-reduced-motion: reduce) {
-  .dds-savings__items {
-    display: flex;
-    gap: 1.44rem;
-    overflow-x: auto;
-  }
-
-  .dds-savings__item {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-}
+/* The one-at-a-time mobile behaviour now lives in assets/dds-rotator.css,
+   shared with the collection trust bar. This file keeps only the row. */
 
 .dds-savings__item .dds-icon--check {
   flex: none;

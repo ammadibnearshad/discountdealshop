@@ -1,0 +1,17 @@
+/* ==========================================================================
+   DDS collection grid — container and column overrides.
+
+   The card itself is styled by section-dds-featured-collection.css, which this
+   section also loads: one card, one stylesheet, both templates.
+   ========================================================================== */
+
+.dds-collection-grid {
+  max-width: var(--dds-app-width, 52rem);
+  margin-inline: auto;
+}
+
+@media screen and (min-width: 990px) {
+  .dds-collection-grid {
+    max-width: var(--dds-app-width-lg, 108rem);
+  }
+}

@@ -1,0 +1,47 @@
+/* ==========================================================================
+   DDS rotator — one item at a time on mobile, cross-fading upward.
+   Paired with assets/dds-rotator.js. Shared by the savings strip and the
+   collection trust bar.
+
+   This file owns only the stacking and the fade. Each section keeps its own
+   row layout (gap, colours, padding) in its own stylesheet, and that row is
+   what renders on wide screens and under reduced motion.
+   ========================================================================== */
+
+/* Every item shares grid cell 1/1, so the strip is as tall as the tallest
+   item and nothing is clipped. Gap is deliberately untouched — it has no
+   effect on a single-cell grid, which lets the section's own gap survive for
+   the reduced-motion row below. */
+@media screen and (max-width: 749px) {
+  .dds-rotator__track {
+    display: grid;
+    overflow: hidden;
+  }
+
+  .dds-rotator__track > * {
+    grid-area: 1 / 1;
+    opacity: 0;
+    transform: translateY(0.8rem);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+  }
+
+  .dds-rotator__track > .is-active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Reduced motion: fall back to the scrollable row rather than hiding items
+   behind an animation that never plays. */
+@media screen and (max-width: 749px) and (prefers-reduced-motion: reduce) {
+  .dds-rotator__track {
+    display: flex;
+    overflow-x: auto;
+  }
+
+  .dds-rotator__track > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

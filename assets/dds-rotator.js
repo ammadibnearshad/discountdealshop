@@ -1,24 +1,34 @@
-/* DDS savings strip
+/* DDS rotator
  *
- * Cycles the promise items one at a time on small screens. The stacked layout
- * and the cross-fade live in section-dds-savings-bar.css so they are right on
- * first paint; this element only decides when to advance.
+ * Shows one child at a time on small screens, cross-fading upward. Shared by
+ * the savings strip and the collection trust bar.
+ *
+ * The stacked layout and the fade live in dds-rotator.css so they are correct
+ * on first paint; this element only decides when to advance.
  *
  * Rotation is skipped on wide screens and under prefers-reduced-motion — in
- * both cases the CSS shows every promise in a scrollable row instead, so no
- * promise is ever unreachable.
+ * both cases the CSS shows every item in a scrollable row instead, so nothing
+ * is ever unreachable.
+ *
+ * Markup:
+ *   <dds-rotator data-rotate-speed="3">
+ *     <ul class="dds-rotator__track" data-rotator-items>
+ *       <li class="is-active">…</li>
+ *       <li>…</li>
+ *     </ul>
+ *   </dds-rotator>
  */
 
-if (!customElements.get('dds-savings-bar')) {
-  class DdsSavingsBar extends HTMLElement {
+if (!customElements.get('dds-rotator')) {
+  class DdsRotator extends HTMLElement {
     connectedCallback() {
-      this.list = this.querySelector('[data-savings-items]');
-      if (!this.list) return;
+      this.track = this.querySelector('[data-rotator-items]');
+      if (!this.track) return;
 
-      this.items = Array.from(this.list.children);
+      this.items = Array.from(this.track.children);
       if (this.items.length < 2) return;
 
-      this.index = this.items.findIndex((item) => item.classList.contains('dds-savings__item--active'));
+      this.index = this.items.findIndex((item) => item.classList.contains('is-active'));
       if (this.index < 0) this.index = 0;
 
       this.timer = null;
@@ -58,7 +68,7 @@ if (!customElements.get('dds-savings-bar')) {
 
     show(i) {
       this.index = (i + this.items.length) % this.items.length;
-      this.items.forEach((item, n) => item.classList.toggle('dds-savings__item--active', n === this.index));
+      this.items.forEach((item, n) => item.classList.toggle('is-active', n === this.index));
     }
 
     start() {
@@ -83,5 +93,5 @@ if (!customElements.get('dds-savings-bar')) {
     }
   }
 
-  customElements.define('dds-savings-bar', DdsSavingsBar);
+  customElements.define('dds-rotator', DdsRotator);
 }

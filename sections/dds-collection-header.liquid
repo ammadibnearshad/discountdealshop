@@ -1,0 +1,236 @@
+{% comment %}
+  DDS collection header — breadcrumb, title with item count, collapsible
+  description, and a trust bar.
+
+  No prototype exists for the collection page (_reference has home and PDP
+  only), so this is built from the supplied screenshot against the same card
+  system as the homepage.
+
+  The trust bar reuses <dds-rotator> — the same one-at-a-time fade-up the
+  savings strip uses on mobile.
+{% endcomment %}
+
+{{ 'section-dds-collection-header.css' | asset_url | stylesheet_tag }}
+{{ 'dds-rotator.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'dds-rotator.js' | asset_url }}" defer="defer"></script>
+{%- if section.settings.show_description -%}
+  <script src="{{ 'section-dds-collection-header.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{% style %}
+  .section-{{ section.id }} {
+    --dds-desc-lines: {{ section.settings.description_lines }};
+    padding-top: {{ section.settings.padding_top | divided_by: 2 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | divided_by: 2 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }} {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="dds-collection-header section-{{ section.id }}">
+  <div class="dds-collection-header__card color-{{ section.settings.color_scheme }} gradient">
+    {%- if section.settings.show_breadcrumb -%}
+      {%- comment -%}
+        Shopify has no breadcrumb object. The trail is built from real routes:
+        home, then the collection the customer came through when the URL says
+        so, then the current collection.
+      {%- endcomment -%}
+      <nav class="dds-collection-header__crumbs" aria-label="{{ section.settings.breadcrumb_label | escape }}">
+        <ol role="list">
+          <li><a href="{{ routes.root_url }}">{{ section.settings.home_label | escape }}</a></li>
+          {%- if collection.metafields.custom.parent_collection.value != blank -%}
+            {%- assign parent = collection.metafields.custom.parent_collection.value -%}
+            <li><a href="{{ parent.url }}">{{ parent.title | escape }}</a></li>
+          {%- endif -%}
+          <li><span aria-current="page">{{ collection.title | escape }}</span></li>
+        </ol>
+      </nav>
+    {%- endif -%}
+
+    <div class="dds-collection-header__title-row">
+      <h1 class="dds-collection-header__title">{{ collection.title | escape }}</h1>
+      {%- if section.settings.show_count -%}
+        <p class="dds-collection-header__count">
+          {{- 'products.facets.product_count_simple' | t: count: collection.products_count -}}
+        </p>
+      {%- endif -%}
+    </div>
+
+    {%- if section.settings.show_description and collection.description != blank -%}
+      <dds-readmore class="dds-collection-header__desc">
+        <div class="dds-collection-header__desc-body" data-readmore-body>
+          {{ collection.description }}
+        </div>
+        {%- comment -%}
+          Rendered hidden and revealed by JS only when the text actually
+          overflows, so short descriptions never get a pointless toggle.
+        {%- endcomment -%}
+        <button
+          class="dds-collection-header__readmore"
+          type="button"
+          hidden
+          data-readmore-toggle
+          data-label-more="{{ section.settings.read_more_label | escape }}"
+          data-label-less="{{ section.settings.read_less_label | escape }}"
+          aria-expanded="false"
+        >
+          {{ section.settings.read_more_label | escape }}
+        </button>
+      </dds-readmore>
+    {%- endif -%}
+  </div>
+
+  {%- if section.blocks.size > 0 -%}
+    <dds-rotator
+      class="dds-collection-header__trust color-{{ section.settings.color_scheme }} gradient"
+      data-rotate-speed="{{ section.settings.rotate_speed }}"
+    >
+      <ul class="dds-collection-header__trust-items dds-rotator__track" role="list" data-rotator-items>
+        {%- for block in section.blocks -%}
+          <li
+            class="dds-collection-header__trust-item{% if forloop.first %} is-active{% endif %}"
+            {{ block.shopify_attributes }}
+          >
+            {%- render 'icon-dds-check' -%}
+            {{ block.settings.text | escape }}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </dds-rotator>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "DDS collection header",
+  "tag": "section",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumb",
+      "default": true,
+      "label": "Show breadcrumb"
+    },
+    {
+      "type": "text",
+      "id": "home_label",
+      "label": "Home link label",
+      "default": "Home"
+    },
+    {
+      "type": "text",
+      "id": "breadcrumb_label",
+      "label": "Breadcrumb accessible name",
+      "info": "Announced to screen readers. Not shown on the page.",
+      "default": "Breadcrumb"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_count",
+      "default": true,
+      "label": "Show item count"
+    },
+    {
+      "type": "header",
+      "content": "Description"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "default": true,
+      "label": "t:sections.main-collection-banner.settings.show_collection_description.label"
+    },
+    {
+      "type": "range",
+      "id": "description_lines",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "unit": "ln",
+      "label": "Lines before Read more",
+      "default": 3
+    },
+    {
+      "type": "text",
+      "id": "read_more_label",
+      "label": "Read more label",
+      "default": "Read more"
+    },
+    {
+      "type": "text",
+      "id": "read_less_label",
+      "label": "Read less label",
+      "default": "Read less"
+    },
+    {
+      "type": "header",
+      "content": "Trust bar"
+    },
+    {
+      "type": "range",
+      "id": "rotate_speed",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "unit": "s",
+      "label": "Change item every",
+      "info": "Mobile only. Wider screens show all items at once, as does reduced motion.",
+      "default": 3
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.colors.label"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 8
+    }
+  ],
+  "blocks": [
+    {
+      "type": "trust",
+      "name": "Trust item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Free delivery"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

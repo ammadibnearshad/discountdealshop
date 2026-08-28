@@ -1,0 +1,177 @@
+/* ==========================================================================
+   DDS collection header — breadcrumb, title, description, trust bar.
+
+   No prototype exists for the collection page; built from the supplied
+   screenshot on the same card system as the homepage.
+
+   Dawn's root font-size is 62.5% (1rem = 10px).
+   ========================================================================== */
+
+.dds-collection-header {
+  max-width: var(--dds-app-width, 52rem);
+  margin-inline: auto;
+}
+
+@media screen and (min-width: 990px) {
+  .dds-collection-header {
+    max-width: var(--dds-app-width-lg, 108rem);
+  }
+}
+
+.dds-collection-header__card {
+  padding: 1.36rem 1.44rem 1.6rem;
+  border-radius: var(--dds-card-radius, 0);
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+}
+
+/* Breadcrumb --------------------------------------------------------------- */
+
+.dds-collection-header__crumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.32rem 0.56rem;
+  margin: 0 0 0.8rem;
+  padding: 0;
+  list-style: none;
+  color: var(--dds-muted, #8e8e8e);
+  font-size: 1.152rem;
+}
+
+.dds-collection-header__crumbs a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.dds-collection-header__crumbs a:hover {
+  text-decoration: underline;
+}
+
+.dds-collection-header__crumbs li + li::before {
+  content: '/';
+  margin-right: 0.56rem;
+  color: var(--dds-line-2, #dcdcdc);
+}
+
+/* Title -------------------------------------------------------------------- */
+
+.dds-collection-header__title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.8rem;
+}
+
+.dds-collection-header__title {
+  margin: 0;
+  color: var(--dds-ink, #1a1a1a);
+  font-size: 1.92rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.dds-collection-header__count {
+  margin: 0;
+  color: var(--dds-muted, #8e8e8e);
+  font-size: 1.216rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Description -------------------------------------------------------------- */
+
+.dds-collection-header__desc {
+  display: block;
+  margin-top: 0.8rem;
+}
+
+.dds-collection-header__desc-body {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--dds-desc-lines, 3);
+  line-clamp: var(--dds-desc-lines, 3);
+  color: var(--dds-ink-2, #5c5c5c);
+  font-size: 1.312rem;
+  line-height: 1.55;
+}
+
+.dds-collection-header__desc.is-open .dds-collection-header__desc-body {
+  -webkit-line-clamp: none;
+  line-clamp: none;
+  overflow: visible;
+}
+
+.dds-collection-header__desc-body > *:first-child {
+  margin-top: 0;
+}
+
+.dds-collection-header__desc-body > *:last-child {
+  margin-bottom: 0;
+}
+
+.dds-collection-header__readmore {
+  display: inline-flex;
+  align-items: center;
+  min-height: 4.4rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--dds-ink, #1a1a1a);
+  font-family: inherit;
+  font-size: 1.248rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dds-collection-header__readmore[hidden] {
+  display: none;
+}
+
+/* Trust bar ---------------------------------------------------------------- */
+
+.dds-collection-header__trust {
+  margin-top: 0.8rem;
+  padding: 0.72rem 1.44rem;
+  border-radius: var(--dds-card-radius, 0);
+  background-color: rgb(var(--color-background));
+  display: block;
+}
+
+.dds-collection-header__trust-items {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  list-style: none;
+  scrollbar-width: none;
+}
+
+.dds-collection-header__trust-items::-webkit-scrollbar {
+  display: none;
+}
+
+.dds-collection-header__trust-item {
+  display: flex;
+  align-items: center;
+  gap: 0.48rem;
+  color: var(--dds-ink-2, #5c5c5c);
+  font-size: 1.216rem;
+  white-space: nowrap;
+}
+
+.dds-collection-header__trust-item .dds-icon--check {
+  flex: none;
+  width: 1.3rem;
+  height: 1.3rem;
+  fill: none;
+  stroke: var(--dds-green, #00875a);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
