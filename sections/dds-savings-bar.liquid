@@ -1,0 +1,121 @@
+{% comment %}
+  DDS savings strip — red gradient bar with a SAVINGS tag and a scrolling
+  checklist of the store's standing promises.
+  Reference: _reference/dds-home.html → div.savings
+
+  The gradient is the "money and urgency" token, not a colour scheme, so this
+  section deliberately has no color_scheme setting — one would have nothing to
+  control.
+{% endcomment %}
+
+{{ 'section-dds-savings-bar.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  .section-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top | divided_by: 2 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | divided_by: 2 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }} {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="dds-savings section-{{ section.id }}">
+  <div class="dds-savings__bar">
+    {%- if section.settings.tag_label != blank -%}
+      <span class="dds-savings__tag">
+        {%- render 'icon-dds-bolt' -%}
+        {{ section.settings.tag_label | escape }}
+      </span>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <ul class="dds-savings__items" role="list">
+        {%- for block in section.blocks -%}
+          <li class="dds-savings__item" {{ block.shopify_attributes }}>
+            {%- render 'icon-dds-check' -%}
+            {{ block.settings.text | escape }}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "DDS savings strip",
+  "tag": "section",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "text",
+      "id": "tag_label",
+      "label": "Tag label",
+      "info": "The bolt chip at the start of the bar. Leave blank to hide it.",
+      "default": "SAVINGS"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 8
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Promise",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Free delivery all Pakistan"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "DDS savings strip",
+      "blocks": [
+        {
+          "type": "item",
+          "settings": { "text": "Free delivery all Pakistan" }
+        },
+        {
+          "type": "item",
+          "settings": { "text": "Cash on Delivery" }
+        },
+        {
+          "type": "item",
+          "settings": { "text": "7-day return" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

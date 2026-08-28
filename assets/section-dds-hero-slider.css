@@ -1,0 +1,267 @@
+/* ==========================================================================
+   DDS hero slider — image left, store message right.
+   Reference: _reference/dds-home.html → section.hero
+
+   Dawn's root font-size is 62.5% (1rem = 10px). The prototype's rems were
+   16px-based and have been converted.
+   ========================================================================== */
+
+.dds-hero {
+  max-width: var(--dds-app-width, 52rem);
+  margin-inline: auto;
+}
+
+@media screen and (min-width: 990px) {
+  .dds-hero {
+    max-width: var(--dds-app-width-lg, 108rem);
+  }
+}
+
+.dds-hero__card {
+  position: relative;
+  overflow: hidden;
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  display: block;
+}
+
+@media screen and (min-width: 990px) {
+  .dds-hero__card {
+    border-radius: var(--dds-radius, 0.8rem);
+  }
+}
+
+/* Track -------------------------------------------------------------------- */
+
+.dds-hero__track {
+  display: flex;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.dds-hero__track::-webkit-scrollbar {
+  display: none;
+}
+
+.dds-hero__slide {
+  display: grid;
+  flex: 0 0 100%;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.6rem;
+  align-items: center;
+  padding: 1.6rem 1.6rem 2.56rem;
+  scroll-snap-align: start;
+}
+
+@media screen and (min-width: 990px) {
+  .dds-hero__slide {
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 3.2rem;
+    padding: 2.8rem 3.2rem 3.6rem;
+  }
+}
+
+/* Art ---------------------------------------------------------------------- */
+
+.dds-hero__art {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  padding: 1.76rem;
+  border-radius: var(--dds-radius, 0.8rem);
+  background-color: var(--dds-wash, #f6f5f3);
+}
+
+@media screen and (min-width: 990px) {
+  .dds-hero__art {
+    aspect-ratio: 4 / 3;
+    padding: 2.8rem;
+  }
+}
+
+.dds-hero__image,
+.dds-hero__placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.dds-hero__placeholder {
+  fill: var(--dds-navy, #12294b);
+  opacity: 0.35;
+}
+
+/* Copy --------------------------------------------------------------------- */
+
+.dds-hero__eyebrow {
+  margin: 0;
+  color: var(--dds-red, #d71e28);
+  font-size: 1.088rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.dds-hero__heading {
+  margin: 0.56rem 0 0.48rem;
+  color: rgb(var(--color-foreground));
+  font-size: 1.84rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+@media screen and (min-width: 990px) {
+  .dds-hero__heading {
+    font-size: 2.72rem;
+  }
+}
+
+.dds-hero__text {
+  margin: 0;
+  color: var(--dds-ink-2, #5c5c5c);
+  font-size: 1.312rem;
+  line-height: 1.5;
+}
+
+@media screen and (min-width: 990px) {
+  .dds-hero__text {
+    max-width: 40ch;
+    font-size: 1.472rem;
+  }
+}
+
+.dds-hero__note {
+  display: flex;
+  align-items: center;
+  gap: 0.48rem;
+  margin: 0.88rem 0 0;
+  color: var(--dds-green, #00875a);
+  font-size: 1.152rem;
+  font-weight: 600;
+}
+
+.dds-hero__note .dds-icon--check {
+  flex: none;
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dds-hero__cta {
+  display: inline-grid;
+  place-items: center;
+  /* Reference is 38px; raised to the 44px touch-target floor. */
+  min-height: 4.4rem;
+  margin-top: 1.2rem;
+  padding: 0 1.76rem;
+  border-radius: 2.2rem;
+  background: linear-gradient(90deg, var(--dds-red, #d71e28), var(--dds-red-2, #f0562a));
+  color: var(--dds-on-red, #ffffff);
+  font-size: 1.312rem;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
+.dds-hero__cta[aria-disabled='true'] {
+  cursor: default;
+  opacity: 0.6;
+}
+
+/* Dots --------------------------------------------------------------------- */
+
+.dds-hero__dots {
+  position: absolute;
+  left: 50%;
+  bottom: 0.88rem;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.48rem;
+}
+
+.dds-hero__dot {
+  position: relative;
+  width: 0.6rem;
+  height: 0.6rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0.3rem;
+  background-color: var(--dds-line-2, #dcdcdc);
+  cursor: pointer;
+  transition: width 0.2s ease, background-color 0.2s ease;
+}
+
+/* Keeps the visual dot small while giving it a real 24px hit area. */
+.dds-hero__dot::after {
+  content: '';
+  position: absolute;
+  inset: -0.9rem -0.3rem;
+}
+
+.dds-hero__dot[aria-current='true'] {
+  width: 1.8rem;
+  background-color: var(--dds-red, #d71e28);
+}
+
+/* Arrows ------------------------------------------------------------------- */
+
+.dds-hero__arrow {
+  display: none;
+}
+
+@media screen and (min-width: 990px) {
+  .dds-hero__arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    width: 3.4rem;
+    height: 3.4rem;
+    padding: 0;
+    border: 0.1rem solid var(--dds-line, #ededed);
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.92);
+    color: var(--dds-ink, #1a1a1a);
+    cursor: pointer;
+  }
+
+  .dds-hero__arrow .dds-icon--chevron {
+    width: 1.7rem;
+    height: 1.7rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .dds-hero__arrow--prev {
+    left: 0.96rem;
+  }
+
+  .dds-hero__arrow--next {
+    right: 0.96rem;
+  }
+}
+
+/* Motion ------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .dds-hero__track {
+    scroll-behavior: auto;
+  }
+
+  .dds-hero__dot {
+    transition: none;
+  }
+}

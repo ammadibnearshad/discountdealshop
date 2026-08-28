@@ -1,0 +1,94 @@
+/* ==========================================================================
+   DDS savings strip
+   Reference: _reference/dds-home.html → div.savings
+
+   Dawn's root font-size is 62.5% (1rem = 10px). The prototype's rems were
+   16px-based and have been converted.
+
+   Colour fallbacks are the DDS palette; once assets/dds-tokens.css exists
+   these var() calls pick the tokens up with no change here.
+   ========================================================================== */
+
+.dds-savings {
+  max-width: var(--dds-app-width, 52rem);
+  margin-inline: auto;
+}
+
+@media screen and (min-width: 990px) {
+  .dds-savings {
+    max-width: var(--dds-app-width-lg, 108rem);
+  }
+}
+
+.dds-savings__bar {
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  background: linear-gradient(90deg, var(--dds-red, #d71e28), var(--dds-red-2, #f0562a));
+  color: var(--dds-on-red, #ffffff);
+  font-size: 1.248rem;
+}
+
+@media screen and (min-width: 990px) {
+  .dds-savings__bar {
+    border-radius: var(--dds-radius, 0.8rem);
+  }
+}
+
+/* Tag ---------------------------------------------------------------------- */
+
+.dds-savings__tag {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.72rem 0.96rem;
+  background-color: rgba(0, 0, 0, 0.16);
+  font-size: 1.152rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.dds-savings__tag .dds-icon--bolt {
+  flex: none;
+  width: 1.3rem;
+  height: 1.3rem;
+  fill: var(--dds-bolt, #ffd9a0);
+  stroke: none;
+}
+
+/* Items -------------------------------------------------------------------- */
+
+.dds-savings__items {
+  display: flex;
+  align-items: center;
+  gap: 1.44rem;
+  margin: 0;
+  padding: 0.72rem 1.12rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  list-style: none;
+  scrollbar-width: none;
+}
+
+.dds-savings__items::-webkit-scrollbar {
+  display: none;
+}
+
+.dds-savings__item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.dds-savings__item .dds-icon--check {
+  flex: none;
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
