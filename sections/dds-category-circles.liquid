@@ -1,0 +1,242 @@
+{% comment %}
+  DDS category circles — round icon tiles, 4-up on mobile, 8-up on desktop.
+  Reference: _reference/dds-home.html → section.card > .blockhead + .cats
+
+  Dawn's `collection-list` covers the same job conceptually but renders
+  rectangular collection cards through card-collection.liquid in a slider
+  grid; nothing about that markup survives a 60px circle at 8 columns, so this
+  is built fresh. Each block still takes a collection so the label and link
+  fill themselves in.
+{% endcomment %}
+
+{{ 'section-dds-category-circles.css' | asset_url | stylesheet_tag }}
+
+{% style %}
+  .section-{{ section.id }} {
+    padding-top: {{ section.settings.padding_top | divided_by: 2 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | divided_by: 2 }}px;
+  }
+
+  .section-{{ section.id }} .dds-categories__grid {
+    grid-template-columns: repeat({{ section.settings.columns_mobile }}, minmax(0, 1fr));
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }} {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+
+    .section-{{ section.id }} .dds-categories__grid {
+      grid-template-columns: repeat({{ section.settings.columns_desktop }}, minmax(0, 1fr));
+    }
+  }
+{% endstyle %}
+
+<div class="dds-categories section-{{ section.id }}">
+  <div class="dds-categories__card color-{{ section.settings.color_scheme }} gradient">
+    {%- if section.settings.heading != blank or section.settings.heading_link_label != blank -%}
+      <div class="dds-categories__head">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="dds-categories__heading">{{ section.settings.heading | escape }}</h2>
+        {%- endif -%}
+
+        {%- if section.settings.heading_link_label != blank and section.settings.heading_link != blank -%}
+          <a class="dds-categories__more" href="{{ section.settings.heading_link }}">
+            {{ section.settings.heading_link_label | escape }}
+            {%- render 'icon-dds-chevron-right' -%}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 0 -%}
+      <ul class="dds-categories__grid" role="list">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            # Manual fields win; a picked collection fills in whatever is left blank.
+            assign cat_url = block.settings.link
+            if cat_url == blank
+              assign cat_url = block.settings.collection.url
+            endif
+
+            assign cat_label = block.settings.label
+            if cat_label == blank
+              assign cat_label = block.settings.collection.title
+            endif
+
+            assign cat_image = block.settings.image
+            if cat_image == blank
+              assign cat_image = block.settings.collection.image
+            endif
+
+            assign tile_tag = 'div'
+            if cat_url != blank
+              assign tile_tag = 'a'
+            endif
+          -%}
+
+          <li {{ block.shopify_attributes }}>
+            <{{ tile_tag }}
+              class="dds-categories__tile"
+              {% if cat_url != blank %}
+                href="{{ cat_url }}"
+              {% endif %}
+            >
+              <span class="dds-categories__icon">
+                {%- if cat_image != blank -%}
+                  {{
+                    cat_image
+                    | image_url: width: 240
+                    | image_tag:
+                      class: 'dds-categories__image',
+                      widths: '60, 90, 120, 180, 240',
+                      sizes: '60px',
+                      alt: '',
+                      loading: 'lazy'
+                  }}
+                {%- else -%}
+                  {{ 'collection-1' | placeholder_svg_tag: 'dds-categories__placeholder' }}
+                {%- endif -%}
+              </span>
+
+              {%- if cat_label != blank -%}
+                <span class="dds-categories__label">{{ cat_label | escape }}</span>
+              {%- endif -%}
+            </{{ tile_tag }}>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "DDS category circles",
+  "tag": "section",
+  "max_blocks": 16,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.collection-list.settings.title.label",
+      "default": "Categories"
+    },
+    {
+      "type": "text",
+      "id": "heading_link_label",
+      "label": "Heading link label",
+      "info": "The small link on the right of the heading. Needs a link to show.",
+      "default": "All"
+    },
+    {
+      "type": "url",
+      "id": "heading_link",
+      "label": "Heading link"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.collection-list.settings.header_layout.content"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "options": [
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "default": "4",
+      "label": "t:sections.collection-list.settings.columns_mobile.label"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 4,
+      "max": 8,
+      "step": 1,
+      "label": "t:sections.collection-list.settings.columns_desktop.label",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.colors.label"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 8
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "t:sections.collection-list.blocks.featured_collection.settings.collection.label",
+          "info": "Fills the label and link automatically. Override either below."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Icon",
+          "info": "Square line-art icon. Falls back to the collection image."
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "DDS category circles",
+      "blocks": [
+        { "type": "category", "settings": { "label": "Kitchen" } },
+        { "type": "category", "settings": { "label": "Organizers" } },
+        { "type": "category", "settings": { "label": "Racks" } },
+        { "type": "category", "settings": { "label": "Cleaning" } },
+        { "type": "category", "settings": { "label": "Lunch box" } },
+        { "type": "category", "settings": { "label": "Bottles" } },
+        { "type": "category", "settings": { "label": "Hooks" } },
+        { "type": "category", "settings": { "label": "Kids" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

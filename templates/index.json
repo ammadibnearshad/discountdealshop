@@ -161,11 +161,93 @@
         "padding_top": 0,
         "padding_bottom": 8
       }
+    },
+    "dds_category_circles": {
+      "type": "dds-category-circles",
+      "blocks": {
+        "category_1": {
+          "type": "category",
+          "settings": {
+            "label": "Kitchen",
+            "link": ""
+          }
+        },
+        "category_2": {
+          "type": "category",
+          "settings": {
+            "label": "Organizers",
+            "link": ""
+          }
+        },
+        "category_3": {
+          "type": "category",
+          "settings": {
+            "label": "Racks",
+            "link": ""
+          }
+        },
+        "category_4": {
+          "type": "category",
+          "settings": {
+            "label": "Cleaning",
+            "link": ""
+          }
+        },
+        "category_5": {
+          "type": "category",
+          "settings": {
+            "label": "Lunch box",
+            "link": ""
+          }
+        },
+        "category_6": {
+          "type": "category",
+          "settings": {
+            "label": "Bottles",
+            "link": ""
+          }
+        },
+        "category_7": {
+          "type": "category",
+          "settings": {
+            "label": "Hooks",
+            "link": ""
+          }
+        },
+        "category_8": {
+          "type": "category",
+          "settings": {
+            "label": "Kids",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "category_1",
+        "category_2",
+        "category_3",
+        "category_4",
+        "category_5",
+        "category_6",
+        "category_7",
+        "category_8"
+      ],
+      "settings": {
+        "heading": "Categories",
+        "heading_link_label": "All",
+        "heading_link": "",
+        "columns_mobile": "4",
+        "columns_desktop": 8,
+        "color_scheme": "scheme-1",
+        "padding_top": 0,
+        "padding_bottom": 8
+      }
     }
   },
   "order": [
     "dds_savings_bar",
     "dds_hero_slider",
+    "dds_category_circles",
     "image_banner",
     "featured_collection"
   ]

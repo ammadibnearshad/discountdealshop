@@ -1,0 +1,121 @@
+/* ==========================================================================
+   DDS category circles
+   Reference: _reference/dds-home.html → section.card > .blockhead + .cats
+
+   Dawn's root font-size is 62.5% (1rem = 10px). The prototype's rems were
+   16px-based and have been converted.
+
+   Column counts come from the section's inline style block, since they are
+   merchant settings.
+   ========================================================================== */
+
+.dds-categories {
+  max-width: var(--dds-app-width, 52rem);
+  margin-inline: auto;
+}
+
+@media screen and (min-width: 990px) {
+  .dds-categories {
+    max-width: var(--dds-app-width-lg, 108rem);
+  }
+}
+
+.dds-categories__card {
+  padding: 1.36rem 1.44rem;
+  border-radius: var(--dds-card-radius, 0);
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+}
+
+/* Block heading ------------------------------------------------------------ */
+
+.dds-categories__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 1.12rem;
+}
+
+.dds-categories__heading {
+  margin: 0;
+  font-size: 1.568rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.dds-categories__more {
+  display: flex;
+  align-items: center;
+  gap: 0.24rem;
+  color: var(--dds-muted, #8e8e8e);
+  font-size: 1.248rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.dds-categories__more .dds-icon--chevron {
+  flex: none;
+  width: 1.3rem;
+  height: 1.3rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Grid --------------------------------------------------------------------- */
+
+.dds-categories__grid {
+  display: grid;
+  gap: 1.2rem 0.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dds-categories__tile {
+  display: grid;
+  justify-items: center;
+  gap: 0.56rem;
+  color: inherit;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* Icon --------------------------------------------------------------------- */
+
+.dds-categories__icon {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 6rem;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  padding: 1.12rem;
+  border-radius: 50%;
+  background-color: var(--dds-wash, #f6f5f3);
+  color: var(--dds-navy, #12294b);
+}
+
+.dds-categories__image,
+.dds-categories__placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.dds-categories__placeholder {
+  fill: currentColor;
+  opacity: 0.4;
+}
+
+/* Label -------------------------------------------------------------------- */
+
+.dds-categories__label {
+  color: var(--dds-ink-2, #5c5c5c);
+  font-size: 1.152rem;
+  font-weight: 400;
+  line-height: 1.25;
+}
