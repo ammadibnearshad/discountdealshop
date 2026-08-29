@@ -173,6 +173,7 @@
         "category_7",
         "category_8"
       ],
+      "disabled": true,
       "settings": {
         "heading": "Categories",
         "heading_link_label": "All",
