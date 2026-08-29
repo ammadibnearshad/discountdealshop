@@ -15,11 +15,11 @@
         "title": {
           "type": "title",
           "settings": {
-            "show_sold": true,
-            "sold_text": "sold",
-            "show_seller": true,
+            "show_sold": false,
+            "sold_text": "",
+            "show_seller": false,
             "seller_prefix": "Sold by",
-            "show_rating": true
+            "show_rating": false
           }
         },
         "price": {
@@ -31,11 +31,11 @@
         "countdown": {
           "type": "countdown",
           "settings": {
-            "label": "Big sale",
-            "ends_label": "Ends in",
             "end_date": "",
             "end_time": "23:59",
-            "allow_metafield_override": false
+            "allow_metafield_override": false,
+            "label": "Big sale",
+            "ends_label": "Ends in"
           }
         },
         "variant_picker": {
@@ -68,11 +68,11 @@
             "heading": "Delivery",
             "delivery_lead": "Free delivery",
             "delivery_rest": "all over Pakistan",
-            "late_credit": "Rs 200 credit if late",
+            "late_credit": "",
             "cod_lead": "Cash on Delivery.",
             "cod_text": "Open the parcel and check every item in front of the rider before paying.",
             "returns_lead": "7-day free return",
-            "returns_text": "on damaged, defective or wrong items — we arrange the pickup."
+            "returns_text": "on damaged, defective or wrong items."
           }
         },
         "store": {
@@ -81,7 +81,7 @@
             "store_meta": "4.7 store rating · 12,000+ orders",
             "follow_label": "Follow",
             "follow_url": "",
-            "show_social": true,
+            "show_social": false,
             "social_heading": "Follow us"
           }
         }
