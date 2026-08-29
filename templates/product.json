@@ -57,7 +57,7 @@
           "settings": {
             "show_dynamic_checkout": false,
             "show_gift_card_recipient": false,
-            "show_whatsapp": true,
+            "show_whatsapp": false,
             "whatsapp_label": "Order on WhatsApp",
             "whatsapp_message": "Hi! I want to order [product] ([variant]) for [price]. [url]"
           }
