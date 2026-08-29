@@ -13,6 +13,7 @@
 
 {{ 'section-dds-main-product.css' | asset_url | stylesheet_tag }}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'component-list-social.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'section-dds-main-product.js' | asset_url }}" defer="defer"></script>
@@ -43,7 +44,52 @@
     endif
   endif
 
-  assign sale_ends = product.metafields.custom.sale_ends_at.value
+  assign now_ts = 'now' | date: '%s' | plus: 0
+  assign shop_offset = 'now' | date: '%z'
+
+  comment
+    Card grouping. Title + price share one card; variant picker, quantity and
+    buy buttons share another. Both are computed as the first consecutive run
+    of those block types so a merchant reordering blocks in the editor never
+    ends up with an unrelated block swallowed into a card.
+  endcomment
+  assign head_types = 'title,price' | split: ','
+  assign head_first = 0
+  assign head_last = 0
+  assign head_open = false
+  assign head_done = false
+  for block in section.blocks
+    if head_types contains block.type and head_done == false
+      unless head_open
+        assign head_open = true
+        assign head_first = forloop.index
+      endunless
+      assign head_last = forloop.index
+    else
+      if head_open
+        assign head_done = true
+      endif
+    endif
+  endfor
+
+  assign buy_types = 'variant_picker,quantity,buy_buttons' | split: ','
+  assign buy_first = 0
+  assign buy_last = 0
+  assign buy_open = false
+  assign buy_done = false
+  for block in section.blocks
+    if buy_types contains block.type and buy_done == false
+      unless buy_open
+        assign buy_open = true
+        assign buy_first = forloop.index
+      endunless
+      assign buy_last = forloop.index
+    else
+      if buy_open
+        assign buy_done = true
+      endif
+    endif
+  endfor
 -%}
 
 {% style %}
@@ -103,10 +149,25 @@
     {%- comment -%} Right column: every element is a block. {%- endcomment -%}
     <div class="dds-pdp__col-b">
       {%- for block in section.blocks -%}
+        {%- liquid
+          assign in_head = false
+          if head_first > 0 and forloop.index >= head_first and forloop.index <= head_last
+            assign in_head = true
+          endif
+
+          assign in_buy = false
+          if buy_first > 0 and forloop.index >= buy_first and forloop.index <= buy_last
+            assign in_buy = true
+          endif
+        -%}
+
+        {%- if forloop.index == head_first -%}<div class="dds-pdp__card dds-pdp__headbox">{%- endif -%}
+        {%- if forloop.index == buy_first -%}<div class="dds-pdp__card dds-pdp__buybox">{%- endif -%}
+
         {%- case block.type -%}
 
           {%- when 'title' -%}
-            <div class="dds-pdp__card" {{ block.shopify_attributes }}>
+            <div class="dds-pdp__part{% unless in_head %} dds-pdp__card{% endunless %}" {{ block.shopify_attributes }}>
               <h1 class="dds-pdp__title">{{ product.title | escape }}</h1>
               <div class="dds-pdp__meta">
                 <span class="dds-pdp__meta-left">
@@ -142,7 +203,7 @@
             </div>
 
           {%- when 'price' -%}
-            <div class="dds-pdp__card" {{ block.shopify_attributes }}>
+            <div class="dds-pdp__part{% unless in_head %} dds-pdp__card{% endunless %}" {{ block.shopify_attributes }}>
               <div class="dds-pdp__price-row">
                 {%- if on_sale -%}
                   <span class="visually-hidden">{{ 'products.product.price.sale_price' | t }}</span>
@@ -172,13 +233,36 @@
 
           {%- when 'countdown' -%}
             {%- comment -%}
-              Driven by the custom.sale_ends_at metafield. No metafield, no bar —
-              never a rolling fake deadline.
+              The deadline is set in the theme editor (block settings), with an
+              optional per-product override from the custom.sale_ends_at
+              metafield. Both are real dates — when the chosen source is empty
+              or already past, the bar renders nothing rather than rolling a
+              fake deadline.
             {%- endcomment -%}
-            {%- if sale_ends != blank -%}
+            {%- liquid
+              assign sale_ends_at = ''
+
+              if block.settings.end_date != blank
+                assign end_time = block.settings.end_time | default: '23:59' | strip
+                assign sale_ends_at = block.settings.end_date | strip | append: 'T' | append: end_time | append: ':00' | append: shop_offset
+              endif
+
+              if block.settings.allow_metafield_override and product.metafields.custom.sale_ends_at.value != blank
+                assign sale_ends_at = product.metafields.custom.sale_ends_at.value | date: '%Y-%m-%dT%H:%M:%S%z'
+              endif
+
+              assign sale_live = false
+              if sale_ends_at != blank
+                assign sale_ends_ts = sale_ends_at | date: '%s' | plus: 0
+                if sale_ends_ts > now_ts
+                  assign sale_live = true
+                endif
+              endif
+            -%}
+            {%- if sale_live -%}
               <dds-countdown
                 class="dds-pdp__sale"
-                data-ends-at="{{ sale_ends | date: '%Y-%m-%dT%H:%M:%S%z' }}"
+                data-ends-at="{{ sale_ends_at }}"
                 {{ block.shopify_attributes }}
               >
                 <span class="dds-pdp__sale-label">{{ block.settings.label | escape }}</span>
@@ -191,16 +275,22 @@
             {%- endif -%}
 
           {%- when 'variant_picker' -%}
-            <div class="dds-pdp__card dds-pdp__options" {{ block.shopify_attributes }}>
-              {%- render 'product-variant-picker',
-                product: product,
-                block: block,
-                product_form_id: product_form_id
-              -%}
-            </div>
+            {%- comment -%}
+              Single-variant products have nothing to pick — rendering the
+              wrapper anyway left an empty white card on the page.
+            {%- endcomment -%}
+            {%- unless product.has_only_default_variant -%}
+              <div class="dds-pdp__part dds-pdp__options{% unless in_buy %} dds-pdp__card{% endunless %}" {{ block.shopify_attributes }}>
+                {%- render 'product-variant-picker',
+                  product: product,
+                  block: block,
+                  product_form_id: product_form_id
+                -%}
+              </div>
+            {%- endunless -%}
 
           {%- when 'quantity' -%}
-            <div class="dds-pdp__card dds-pdp__qty-card" {{ block.shopify_attributes }}>
+            <div class="dds-pdp__part dds-pdp__qty-card{% unless in_buy %} dds-pdp__card{% endunless %}" {{ block.shopify_attributes }}>
               <div class="dds-pdp__qty-row">
                 {%- comment -%}
                   Dawn's `quantity-input` snippet is the cart one — it posts
@@ -257,7 +347,7 @@
             </div>
 
           {%- when 'buy_buttons' -%}
-            <div class="dds-pdp__cta" {{ block.shopify_attributes }}>
+            <div class="dds-pdp__part dds-pdp__cta" {{ block.shopify_attributes }}>
               <div class="dds-pdp__cta-inner">
                 {%- if block.settings.show_whatsapp and settings.dds_whatsapp_number != blank -%}
                   {%- liquid
@@ -300,38 +390,18 @@
                 <h2>{{ block.settings.heading | escape }}</h2>
               </div>
 
-              {%- if block.settings.city_estimates != blank -%}
-                <dds-delivery-estimate class="dds-pdp__line">
+              {%- if block.settings.delivery_lead != blank or block.settings.delivery_rest != blank -%}
+                <p class="dds-pdp__line">
                   {%- render 'icon-dds-truck' -%}
                   <span class="dds-pdp__line-body">
                     <b class="dds-pdp__free">{{ block.settings.delivery_lead | escape }}</b>
                     {{ block.settings.delivery_rest | escape }}
-
-                    <label class="visually-hidden" for="DdsCity-{{ section.id }}">
-                      {{- block.settings.city_label | escape -}}
-                    </label>
-                    <select class="dds-pdp__city" id="DdsCity-{{ section.id }}" data-city-select>
-                      {%- assign city_rows = block.settings.city_estimates | newline_to_br | split: '<br />' -%}
-                      {%- for row in city_rows -%}
-                        {%- assign parts = row | strip | split: '|' -%}
-                        {%- if parts.size == 2 -%}
-                          <option value="{{ parts[1] | strip | escape }}">{{ parts[0] | strip | escape }}</option>
-                        {%- endif -%}
-                      {%- endfor -%}
-                    </select>
-
-                    <span class="dds-pdp__eta" data-city-output>
-                      {{ block.settings.eta_prefix | escape }}
-                      <b data-city-days></b>
-                      {{ block.settings.eta_middle | escape }}
-                      <b data-city-name></b>
-                      {%- if block.settings.late_credit != blank -%}
-                        <span aria-hidden="true"> &middot; </span>
-                        <span class="dds-pdp__free">{{ block.settings.late_credit | escape }}</span>
-                      {%- endif -%}
-                    </span>
+                    {%- if block.settings.late_credit != blank -%}
+                      <span aria-hidden="true"> &middot; </span>
+                      <span class="dds-pdp__free">{{ block.settings.late_credit | escape }}</span>
+                    {%- endif -%}
                   </span>
-                </dds-delivery-estimate>
+                </p>
               {%- endif -%}
 
               {%- if block.settings.cod_text != blank -%}
@@ -373,12 +443,38 @@
                   </a>
                 {%- endif -%}
               </div>
+
+              {%- comment -%}
+                Dawn's own social-icons snippet, reading the links from
+                Theme settings → Social media. Renders an empty <ul> when no
+                link is set, so the row is gated on there being at least one.
+              {%- endcomment -%}
+              {%- if block.settings.show_social -%}
+                {%- liquid
+                  assign social_links = settings.social_facebook_link
+                  assign social_links = social_links | append: settings.social_instagram_link | append: settings.social_youtube_link
+                  assign social_links = social_links | append: settings.social_tiktok_link | append: settings.social_twitter_link
+                  assign social_links = social_links | append: settings.social_pinterest_link | append: settings.social_snapchat_link
+                  assign social_links = social_links | append: settings.social_tumblr_link | append: settings.social_vimeo_link
+                -%}
+                {%- if social_links != blank -%}
+                  <div class="dds-pdp__social">
+                    {%- if block.settings.social_heading != blank -%}
+                      <span class="dds-pdp__social-heading">{{ block.settings.social_heading | escape }}</span>
+                    {%- endif -%}
+                    {%- render 'social-icons', class: 'dds-pdp__social-list' -%}
+                  </div>
+                {%- endif -%}
+              {%- endif -%}
             </div>
 
           {%- when '@app' -%}
             {% render block %}
 
         {%- endcase -%}
+
+        {%- if forloop.index == buy_last -%}</div>{%- endif -%}
+        {%- if forloop.index == head_last -%}</div>{%- endif -%}
       {%- endfor -%}
     </div>
   </div>
@@ -498,7 +594,15 @@
       "name": "Sale countdown",
       "limit": 1,
       "settings": [
-        { "type": "paragraph", "content": "Reads the custom.sale_ends_at metafield. The bar is hidden entirely when a product has no end date — it never invents a deadline." },
+        { "type": "paragraph", "content": "Set the deadline here. The bar hides itself when the date is empty or already past." },
+        { "type": "text", "id": "end_date", "label": "Sale ends on",
+          "info": "Format YYYY-MM-DD, for example 2026-09-30. Leave blank to hide the bar." },
+        { "type": "text", "id": "end_time", "label": "Sale ends at",
+          "info": "24-hour store time, for example 23:59. Defaults to 23:59.",
+          "default": "23:59" },
+        { "type": "checkbox", "id": "allow_metafield_override", "default": false,
+          "label": "Let products override the date",
+          "info": "When a product has a custom.sale_ends_at metafield, that date wins over the one above." },
         { "type": "text", "id": "label", "label": "Label", "default": "Big sale" },
         { "type": "text", "id": "ends_label", "label": "Countdown prefix", "default": "Ends in" }
       ]
@@ -567,13 +671,9 @@
         { "type": "text", "id": "heading", "label": "Heading", "default": "Delivery" },
         { "type": "text", "id": "delivery_lead", "label": "Delivery lead", "default": "Free delivery" },
         { "type": "text", "id": "delivery_rest", "label": "Delivery rest", "default": "all over Pakistan" },
-        { "type": "text", "id": "city_label", "label": "City selector label", "default": "Select your city" },
-        { "type": "textarea", "id": "city_estimates", "label": "City estimates",
-          "info": "One per line, as City|days. Example: Karachi|2–3",
-          "default": "Karachi|2–3\nLahore|2–3\nIslamabad / Rawalpindi|2–3\nFaisalabad|3–4\nMultan|3–4\nPeshawar|3–5\nQuetta|4–6\nOther city|3–5" },
-        { "type": "text", "id": "eta_prefix", "label": "Estimate prefix", "default": "Arrives in" },
-        { "type": "text", "id": "eta_middle", "label": "Estimate middle", "default": "working days to" },
-        { "type": "text", "id": "late_credit", "label": "Late credit note", "default": "Rs 200 credit if late" },
+        { "type": "text", "id": "late_credit", "label": "Late credit note",
+          "info": "Appended to the delivery line. Leave blank to hide it.",
+          "default": "Rs 200 credit if late" },
         { "type": "text", "id": "cod_lead", "label": "COD lead", "default": "Cash on Delivery." },
         { "type": "textarea", "id": "cod_text", "label": "COD text",
           "default": "Open the parcel and check every item in front of the rider before paying." },
@@ -592,7 +692,10 @@
           "default": "4.7 store rating · 12,000+ orders" },
         { "type": "text", "id": "follow_label", "label": "Follow button label", "default": "Follow" },
         { "type": "url", "id": "follow_url", "label": "Follow button link",
-          "info": "Leave blank to hide the button." }
+          "info": "Leave blank to hide the button." },
+        { "type": "checkbox", "id": "show_social", "default": true, "label": "Show social links",
+          "info": "Reads the links from Theme settings > Social media. The row hides when none are set." },
+        { "type": "text", "id": "social_heading", "label": "Social links label", "default": "Follow us" }
       ]
     },
     { "type": "@app" }

@@ -61,6 +61,32 @@
   color: rgb(var(--color-foreground));
 }
 
+/* Grouped cards -------------------------------------------------------------*/
+/* Title + price share one card; variant picker, quantity and buy buttons share
+   another. The blocks inside a group render as .dds-pdp__part and drop their
+   own card chrome, so a merchant can still pull a block out of the group in the
+   editor and it becomes a standalone card again. */
+
+.dds-pdp__headbox .dds-pdp__part + .dds-pdp__part {
+  margin-top: 1.04rem;
+}
+
+.dds-pdp__buybox .dds-pdp__part + .dds-pdp__part {
+  margin-top: 1.2rem;
+  padding-top: 1.2rem;
+  border-top: 0.1rem solid var(--dds-line, #ededed);
+}
+
+/* The CTA is a fixed bottom bar on phones, so it must not leave a separator
+   floating inside the card it was pulled out of. */
+@media screen and (max-width: 989px) {
+  .dds-pdp__buybox .dds-pdp__part + .dds-pdp__cta {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+}
+
 .dds-pdp__blockhead {
   display: flex;
   align-items: center;
@@ -408,7 +434,7 @@
 
 /* Quantity ----------------------------------------------------------------- */
 
-.dds-pdp__qty-card {
+.dds-pdp__qty-card.dds-pdp__card {
   padding-top: 1.04rem;
 }
 
@@ -419,13 +445,58 @@
   gap: 1.6rem;
 }
 
+/* Dawn draws the quantity box with a :before background and an :after
+   box-shadow ring, which reads a full shade lighter than the variant tiles next
+   to it. Both pseudo-elements are dropped so the control can carry the same
+   real 1px border, radius and 4.4rem height as a variant tile. */
 .dds-pdp__qty {
   flex: none;
   width: auto;
+  min-width: 12rem;
   min-height: 4.4rem;
   border: 0.1rem solid var(--dds-line-2, #dcdcdc);
   border-radius: var(--dds-radius-sm, 0.4rem);
+  background-color: rgb(var(--color-background));
   overflow: hidden;
+}
+
+.dds-pdp__qty::before,
+.dds-pdp__qty::after {
+  content: none;
+}
+
+.dds-pdp__qty .quantity__input {
+  width: 4.4rem;
+  min-width: 0;
+  flex: 1 1 auto;
+  padding: 0;
+  opacity: 1;
+  color: var(--dds-ink, #1a1a1a);
+  font-size: 1.44rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.dds-pdp__qty .quantity__button {
+  width: 4.2rem;
+  margin: 0;
+  color: var(--dds-ink-2, #5c5c5c);
+}
+
+.dds-pdp__qty .quantity__button:hover:not([disabled]) {
+  color: var(--dds-red, #d71e28);
+}
+
+.dds-pdp__qty .quantity__button .svg-wrapper {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.dds-pdp__qty .quantity__button:focus-visible,
+.dds-pdp__qty .quantity__input:focus-visible {
+  outline: 0.2rem solid var(--dds-red, #d71e28);
+  outline-offset: -0.2rem;
+  background-color: rgb(var(--color-background));
 }
 
 .dds-pdp__bulk {
@@ -473,23 +544,7 @@
   font-weight: 700;
 }
 
-.dds-pdp__city {
-  width: 100%;
-  height: 4.4rem;
-  margin-top: 0.72rem;
-  padding: 0 0.96rem;
-  border: 0.1rem solid var(--dds-line-2, #dcdcdc);
-  border-radius: var(--dds-radius-sm, 0.4rem);
-  background-color: rgb(var(--color-background));
-  color: var(--dds-ink, #1a1a1a);
-  font: inherit;
-  font-size: 1.28rem;
-}
 
-.dds-pdp__eta {
-  display: block;
-  margin-top: 0.56rem;
-}
 
 /* Store -------------------------------------------------------------------- */
 
@@ -542,6 +597,56 @@
   font-size: 1.248rem;
   font-weight: 600;
   text-decoration: none;
+}
+
+/* Store social links. Dawn's own social-icons snippet, re-spaced — its default
+   padding is built for a footer column and is far too airy inside a card. */
+
+.dds-pdp__social {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 1.12rem;
+  padding-top: 1.12rem;
+  border-top: 0.1rem solid var(--dds-line, #ededed);
+}
+
+.dds-pdp__social-heading {
+  flex: none;
+  color: var(--dds-ink-2, #5c5c5c);
+  font-size: 1.248rem;
+  font-weight: 600;
+}
+
+.dds-pdp__social.dds-pdp__social .dds-pdp__social-list {
+  justify-content: flex-start;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.dds-pdp__social-list .list-social__link {
+  min-width: 4.4rem;
+  min-height: 4.4rem;
+  justify-content: center;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--dds-navy, #12294b);
+}
+
+.dds-pdp__social-list .list-social__item .icon {
+  width: 1.9rem;
+  height: 1.9rem;
+}
+
+.dds-pdp__social-list .list-social__link:focus-visible {
+  outline: 0.2rem solid var(--dds-red, #d71e28);
+  outline-offset: -0.2rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dds-pdp__social-list .list-social__link:hover .icon {
+    transform: none;
+  }
 }
 
 /* Buy buttons -------------------------------------------------------------- */

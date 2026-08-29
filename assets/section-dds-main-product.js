@@ -1,6 +1,6 @@
 /* DDS main product
  *
- * Three small custom elements. Variant switching, price re-rendering and the
+ * Two small custom elements. Variant switching, price re-rendering and the
  * add-to-cart itself are all Dawn's (<product-info>, <variant-selects>,
  * <product-form>) — nothing here duplicates that.
  */
@@ -36,9 +36,10 @@ if (!customElements.get('dds-gallery')) {
   customElements.define('dds-gallery', DdsGallery);
 }
 
-/* Sale countdown. Counts down to a real end date from the product's
-   custom.sale_ends_at metafield — the section renders nothing at all when that
-   metafield is empty, so this never invents a deadline. */
+/* Sale countdown. Counts down to the real end date set on the block in the
+   theme editor (optionally overridden per product by custom.sale_ends_at). The
+   section renders nothing at all when that date is empty or already past, so
+   this never invents a deadline. */
 if (!customElements.get('dds-countdown')) {
   class DdsCountdown extends HTMLElement {
     connectedCallback() {
@@ -93,53 +94,4 @@ if (!customElements.get('dds-countdown')) {
   }
 
   customElements.define('dds-countdown', DdsCountdown);
-}
-
-/* City delivery estimate. Each option's value is the day range, so switching
-   city rewrites the estimate line without a request. */
-if (!customElements.get('dds-delivery-estimate')) {
-  class DdsDeliveryEstimate extends HTMLElement {
-    connectedCallback() {
-      this.select = this.querySelector('[data-city-select]');
-      this.days = this.querySelector('[data-city-days]');
-      this.city = this.querySelector('[data-city-name]');
-      if (!this.select || !this.days || !this.city) return;
-
-      this.onChange = this.update.bind(this);
-      this.select.addEventListener('change', this.onChange);
-
-      // Remember the shopper's city between visits — it rarely changes.
-      try {
-        const saved = localStorage.getItem('dds-city');
-        if (saved && [...this.select.options].some((o) => o.text === saved)) {
-          this.select.value = [...this.select.options].find((o) => o.text === saved).value;
-          this.select.selectedIndex = [...this.select.options].findIndex((o) => o.text === saved);
-        }
-      } catch (e) {
-        /* private mode, blocked storage — fall through to the default city */
-      }
-
-      this.update();
-    }
-
-    disconnectedCallback() {
-      if (this.select) this.select.removeEventListener('change', this.onChange);
-    }
-
-    update() {
-      const option = this.select.options[this.select.selectedIndex];
-      if (!option) return;
-
-      this.days.textContent = option.value;
-      this.city.textContent = option.text;
-
-      try {
-        localStorage.setItem('dds-city', option.text);
-      } catch (e) {
-        /* nothing to do — the estimate still shows, it just is not remembered */
-      }
-    }
-  }
-
-  customElements.define('dds-delivery-estimate', DdsDeliveryEstimate);
 }

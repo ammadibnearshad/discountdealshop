@@ -32,7 +32,10 @@
           "type": "countdown",
           "settings": {
             "label": "Big sale",
-            "ends_label": "Ends in"
+            "ends_label": "Ends in",
+            "end_date": "",
+            "end_time": "23:59",
+            "allow_metafield_override": false
           }
         },
         "variant_picker": {
@@ -65,10 +68,6 @@
             "heading": "Delivery",
             "delivery_lead": "Free delivery",
             "delivery_rest": "all over Pakistan",
-            "city_label": "Select your city",
-            "city_estimates": "Karachi|2–3\nLahore|2–3\nIslamabad / Rawalpindi|2–3\nFaisalabad|3–4\nMultan|3–4\nPeshawar|3–5\nQuetta|4–6\nOther city|3–5",
-            "eta_prefix": "Arrives in",
-            "eta_middle": "working days to",
             "late_credit": "Rs 200 credit if late",
             "cod_lead": "Cash on Delivery.",
             "cod_text": "Open the parcel and check every item in front of the rider before paying.",
@@ -81,7 +80,9 @@
           "settings": {
             "store_meta": "4.7 store rating · 12,000+ orders",
             "follow_label": "Follow",
-            "follow_url": ""
+            "follow_url": "",
+            "show_social": true,
+            "social_heading": "Follow us"
           }
         }
       },
