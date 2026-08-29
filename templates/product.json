@@ -65,7 +65,7 @@
         "delivery": {
           "type": "delivery",
           "settings": {
-            "heading": "Delivery",
+            "heading": "",
             "delivery_lead": "Free delivery",
             "delivery_rest": "all over Pakistan",
             "late_credit": "",
