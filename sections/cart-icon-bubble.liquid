@@ -1,8 +1,11 @@
-{% if cart == empty %}
-  <span class="svg-wrapper">{{ 'icon-cart-empty.svg' | inline_asset_content }}</span>
-{% else %}
-  <span class="svg-wrapper">{{ 'icon-cart.svg' | inline_asset_content }}</span>
-{% endif %}
+{%- comment -%}
+  One bold DDS bag for both states — the count bubble below is what
+  distinguishes an empty cart from a full one, so Dawn's two near-identical
+  glyphs are not needed. Kept in a snippet because sections/dds-header.liquid
+  has to render byte-identical markup: the cart JS replaces that element with
+  this section's output after every add.
+{%- endcomment -%}
+<span class="svg-wrapper">{%- render 'icon-dds-cart' -%}</span>
 
 <span class="visually-hidden">{{ 'templates.cart.cart' | t }}</span>
 {%- if cart != empty -%}

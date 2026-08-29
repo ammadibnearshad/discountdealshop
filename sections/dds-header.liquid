@@ -143,10 +143,15 @@
       placeholder: section.settings.search_placeholder
     -%}
 
+    {%- comment -%}
+      Right-hand actions in one flex/grid child so mobile can centre the logo
+      between the drawer toggle and the cart with nothing else in the row.
+    {%- endcomment -%}
+    <div class="dds-header__actions">
     {%- if shop.customer_accounts_enabled -%}
       <shopify-account
         menu="{{ settings.customer_account_menu | default: 'customer-account-main-menu' }}"
-        class="header__icon header__icon--account dds-header__icon link focus-inset"
+        class="header__icon header__icon--account dds-header__icon dds-header__icon--account link focus-inset"
       >
         <span slot="signed-out-avatar" class="svg-wrapper">{{ 'icon-account.svg' | inline_asset_content }}</span>
         <span slot="signed-out-avatar" class="visually-hidden">{{ 'customer.log_in' | t }}</span>
@@ -169,11 +174,7 @@
         Markup below must stay identical to sections/cart-icon-bubble.liquid — the cart
         JS re-renders this element from that section after every add/change.
       {%- endcomment -%}
-      {% if cart == empty %}
-        <span class="svg-wrapper">{{ 'icon-cart-empty.svg' | inline_asset_content }}</span>
-      {% else %}
-        <span class="svg-wrapper">{{ 'icon-cart.svg' | inline_asset_content }}</span>
-      {% endif %}
+      <span class="svg-wrapper">{%- render 'icon-dds-cart' -%}</span>
       <span class="visually-hidden">{{ 'templates.cart.cart' | t }}</span>
       {%- if cart != empty -%}
         <div class="cart-count-bubble">
@@ -184,6 +185,7 @@
         </div>
       {%- endif -%}
     </a>
+    </div>
     </div>
 
     {%- comment -%}

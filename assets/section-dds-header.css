@@ -30,6 +30,14 @@
   padding-inline: 1rem;
 }
 
+/* The right-hand icons travel together, so mobile can lay the bar out as
+   drawer | logo | cart with nothing else in the row. */
+.dds-header__actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+}
+
 @media screen and (min-width: 990px) {
   .dds-header__inner {
     max-width: var(--dds-app-width-lg, 108rem);
@@ -189,12 +197,35 @@
   margin-right: 0;
 }
 
-/* Cart count badge — DDS pill instead of Dawn's circle */
+/* Cart — bold DDS bag (snippets/icon-dds-cart.liquid) instead of Dawn's
+   hairline glyph. Dawn sizes .header__icon--cart .icon to 4.4rem because its
+   own SVG is a 40x40 box with a lot of padding baked in; the DDS bag is a tight
+   24x24 box, so it is sized to the glyph itself. */
+
+.dds-header .header__icon--cart .dds-icon--cart {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+
+.dds-header .dds-icon--cart {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Cart count badge — DDS pill instead of Dawn's circle.
+   Pinned to the corner of the 4.4rem target rather than tucked inside it: at
+   0.6rem it sat straight on top of the bag's handle. The background-coloured
+   ring is what lets it overlap the bag's top-right corner and still read as a
+   badge sitting on the icon rather than a glyph with a bite taken out. */
 .dds-header .cart-count-bubble {
-  top: 0.6rem;
-  right: 0.6rem;
+  top: 0;
+  right: 0;
   bottom: auto;
   left: auto;
+  box-shadow: 0 0 0 0.2rem rgb(var(--color-background));
   min-width: 1.6rem;
   width: auto;
   height: 1.6rem;
@@ -291,5 +322,50 @@
 @media (prefers-reduced-motion: reduce) {
   .dds-header .header__icon:hover .icon {
     transform: none;
+  }
+}
+
+/* Mobile bar --------------------------------------------------------------- */
+/* Below 990px the bar is drawer | logo | cart, and the logo is optically
+   centred rather than pushed by whatever sits either side of it. A three
+   column grid with every child placed explicitly does that without spacer
+   elements, and keeps the logo centred even when the merchant has no menu set
+   (no drawer toggle) or accounts are disabled.
+
+   This block lives at the end of the file on purpose: the `display: none`
+   rules below have to outrank `.dds-header__search { display: block }` above
+   and Dawn's `.header__icon:not(.header__icon--summary) { display: flex }`,
+   both of which would otherwise win on source order or specificity. */
+
+@media screen and (max-width: 989px) {
+  .dds-header .dds-header__inner {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+  }
+
+  .dds-header header-drawer {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  .dds-header .dds-header__heading {
+    grid-column: 2;
+    min-width: 0;
+    justify-self: center;
+  }
+
+  .dds-header .dds-header__actions {
+    grid-column: 3;
+    justify-self: end;
+  }
+
+  .dds-header .dds-header__logo {
+    object-position: center;
+  }
+
+  /* Search and account are desktop only. */
+  .dds-header .dds-header__search,
+  .dds-header .dds-header__icon--account {
+    display: none;
   }
 }
