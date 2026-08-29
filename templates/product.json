@@ -98,7 +98,7 @@
       ],
       "settings": {
         "savings_tag": "SAVINGS",
-        "savings_items": "Free delivery, Rs 200 credit if late, Cash on Delivery",
+        "savings_items": "Free delivery, Cash on Delivery",
         "savings_rotate_speed": 3,
         "urgency_label": "ALMOST SOLD OUT",
         "urgency_threshold": 25,
