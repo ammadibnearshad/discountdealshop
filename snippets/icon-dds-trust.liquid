@@ -1,0 +1,18 @@
+{% comment %}
+  Trust badge icon dispatcher.
+
+  `render` needs a literal snippet name, so the merchant's icon choice is
+  resolved here instead of being concatenated at the call site. Every icon is
+  decorative — the badge label beside it carries the meaning.
+
+  Accepts: name — one of card, shield, truck, return, clock, check, bolt.
+{% endcomment %}
+{%- case name -%}
+  {%- when 'card' -%}{%- render 'icon-dds-card' -%}
+  {%- when 'shield' -%}{%- render 'icon-dds-shield' -%}
+  {%- when 'truck' -%}{%- render 'icon-dds-truck' -%}
+  {%- when 'return' -%}{%- render 'icon-dds-return' -%}
+  {%- when 'clock' -%}{%- render 'icon-dds-clock' -%}
+  {%- when 'check' -%}{%- render 'icon-dds-check' -%}
+  {%- when 'bolt' -%}{%- render 'icon-dds-bolt' -%}
+{%- endcase -%}

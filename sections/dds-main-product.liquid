@@ -531,6 +531,40 @@
               </details>
             {%- endif -%}
 
+          {%- when 'trust' -%}
+            {%- liquid
+              assign trust_labels = ''
+              for i in (1..4)
+                assign key = 'label_' | append: i
+                assign trust_labels = trust_labels | append: block.settings[key]
+              endfor
+            -%}
+            {%- if trust_labels != blank -%}
+              <div class="dds-pdp__card" {{ block.shopify_attributes }}>
+                {%- if block.settings.heading != blank -%}
+                  <div class="dds-pdp__blockhead">
+                    <h2>{{ block.settings.heading | escape }}</h2>
+                  </div>
+                {%- endif -%}
+                <ul class="dds-pdp__trust" role="list">
+                  {%- for i in (1..4) -%}
+                    {%- liquid
+                      assign label_key = 'label_' | append: i
+                      assign icon_key = 'icon_' | append: i
+                      assign tone_key = 'tone_' | append: i
+                      assign trust_label = block.settings[label_key]
+                    -%}
+                    {%- if trust_label != blank -%}
+                      <li class="dds-pdp__trust-item dds-pdp__trust-item--{{ block.settings[tone_key] }}">
+                        {%- render 'icon-dds-trust', name: block.settings[icon_key] -%}
+                        <span>{{ trust_label | escape }}</span>
+                      </li>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </ul>
+              </div>
+            {%- endif -%}
+
           {%- when '@app' -%}
             {% render block %}
 
@@ -795,6 +829,127 @@
         { "type": "checkbox", "id": "open_by_default", "label": "Open by default", "default": false }
       ]
     },
+    {
+      "type": "trust",
+      "name": "Trust badges",
+      "limit": 1,
+      "settings": [
+        { "type": "paragraph", "content": "Up to four badges in one card. Leave a label blank to drop that badge — the row re-centres itself." },
+        { "type": "text", "id": "heading", "label": "Card heading", "info": "Leave blank to show the badges on their own." },
+        { "type": "header", "content": "Badge 1" },
+        { "type": "text", "id": "label_1", "label": "Label", "default": "Safe payments" },
+        {
+          "type": "select",
+          "id": "icon_1",
+          "options": [
+            { "value": "card", "label": "Payment card" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "truck", "label": "Delivery truck" },
+            { "value": "return", "label": "Returns" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "check", "label": "Check mark" },
+            { "value": "bolt", "label": "Lightning bolt" }
+          ],
+          "default": "card",
+          "label": "Icon"
+        },
+        {
+          "type": "select",
+          "id": "tone_1",
+          "options": [
+            { "value": "green", "label": "Green" },
+            { "value": "red", "label": "Red" },
+            { "value": "ink", "label": "Neutral" }
+          ],
+          "default": "green",
+          "label": "Icon colour"
+        },
+        { "type": "header", "content": "Badge 2" },
+        { "type": "text", "id": "label_2", "label": "Label", "default": "Security & privacy" },
+        {
+          "type": "select",
+          "id": "icon_2",
+          "options": [
+            { "value": "card", "label": "Payment card" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "truck", "label": "Delivery truck" },
+            { "value": "return", "label": "Returns" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "check", "label": "Check mark" },
+            { "value": "bolt", "label": "Lightning bolt" }
+          ],
+          "default": "shield",
+          "label": "Icon"
+        },
+        {
+          "type": "select",
+          "id": "tone_2",
+          "options": [
+            { "value": "green", "label": "Green" },
+            { "value": "red", "label": "Red" },
+            { "value": "ink", "label": "Neutral" }
+          ],
+          "default": "green",
+          "label": "Icon colour"
+        },
+        { "type": "header", "content": "Badge 3" },
+        { "type": "text", "id": "label_3", "label": "Label", "default": "Delivery guarantee" },
+        {
+          "type": "select",
+          "id": "icon_3",
+          "options": [
+            { "value": "card", "label": "Payment card" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "truck", "label": "Delivery truck" },
+            { "value": "return", "label": "Returns" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "check", "label": "Check mark" },
+            { "value": "bolt", "label": "Lightning bolt" }
+          ],
+          "default": "truck",
+          "label": "Icon"
+        },
+        {
+          "type": "select",
+          "id": "tone_3",
+          "options": [
+            { "value": "green", "label": "Green" },
+            { "value": "red", "label": "Red" },
+            { "value": "ink", "label": "Neutral" }
+          ],
+          "default": "red",
+          "label": "Icon colour"
+        },
+        { "type": "header", "content": "Badge 4" },
+        { "type": "text", "id": "label_4", "label": "Label", "default": "" },
+        {
+          "type": "select",
+          "id": "icon_4",
+          "options": [
+            { "value": "card", "label": "Payment card" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "truck", "label": "Delivery truck" },
+            { "value": "return", "label": "Returns" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "check", "label": "Check mark" },
+            { "value": "bolt", "label": "Lightning bolt" }
+          ],
+          "default": "return",
+          "label": "Icon"
+        },
+        {
+          "type": "select",
+          "id": "tone_4",
+          "options": [
+            { "value": "green", "label": "Green" },
+            { "value": "red", "label": "Red" },
+            { "value": "ink", "label": "Neutral" }
+          ],
+          "default": "green",
+          "label": "Icon colour"
+        }
+      ]
+    },
     { "type": "@app" }
   ],
   "presets": [
@@ -808,6 +963,7 @@
         { "type": "quantity" },
         { "type": "buy_buttons" },
         { "type": "delivery" },
+        { "type": "trust" },
         { "type": "store" }
       ]
     }

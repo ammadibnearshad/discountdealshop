@@ -821,3 +821,55 @@
     transition: none;
   }
 }
+
+/* Trust badges -------------------------------------------------------------- */
+/* Reference: _reference/dds-product.html → .trust3. One card, icon over label,
+   columns sized off the badge count so dropping one still reads as balanced. */
+
+.dds-pdp__trust {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+}
+
+.dds-pdp__trust-item {
+  display: grid;
+  justify-items: center;
+  gap: 0.48rem;
+  color: var(--dds-ink-2, #5c5c5c);
+  font-size: 1.152rem;
+  line-height: 1.3;
+}
+
+.dds-pdp__trust-item .dds-icon {
+  width: 2rem;
+  height: 2rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The bolt is the one filled glyph in the set. */
+.dds-pdp__trust-item .dds-icon--bolt {
+  fill: currentColor;
+  stroke: none;
+}
+
+.dds-pdp__trust-item--green .dds-icon {
+  color: var(--dds-green, #00875a);
+}
+
+.dds-pdp__trust-item--red .dds-icon {
+  color: var(--dds-red, #d71e28);
+}
+
+.dds-pdp__trust-item--ink .dds-icon {
+  color: var(--dds-ink-2, #5c5c5c);
+}
