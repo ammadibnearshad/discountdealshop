@@ -128,7 +128,7 @@
   flex: 0 0 100%;
   place-items: center;
   aspect-ratio: 1 / 1;
-  padding: 2.2rem;
+  padding: 0;
   scroll-snap-align: start;
 }
 
