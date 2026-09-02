@@ -37,13 +37,16 @@
   }
 }
 
+
 .dds-pdp__col-a,
 .dds-pdp__col-b {
   display: grid;
   gap: 0.8rem;
   align-content: start;
 }
-
+.dds-pdp__col-a{
+  gap:0;
+}
 @media screen and (min-width: 990px) {
   .dds-pdp__col-a {
     position: sticky;
