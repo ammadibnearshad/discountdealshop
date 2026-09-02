@@ -148,6 +148,45 @@
         "padding_bottom": 8
       }
     },
+    "dds_spec_table_NCzzMJ": {
+      "type": "dds-spec-table",
+      "blocks": {
+        "row_MY9XPy": {
+          "type": "row",
+          "settings": {
+            "left": "Label",
+            "right": "Value"
+          }
+        },
+        "row_Cgd8UD": {
+          "type": "row",
+          "settings": {
+            "left": "Label",
+            "right": "Value"
+          }
+        },
+        "row_JUmaMR": {
+          "type": "row",
+          "settings": {
+            "left": "Label",
+            "right": "Value"
+          }
+        }
+      },
+      "block_order": [
+        "row_MY9XPy",
+        "row_Cgd8UD",
+        "row_JUmaMR"
+      ],
+      "name": "DDS spec table",
+      "settings": {
+        "heading": "Item details",
+        "layout": "list",
+        "label_width": 136,
+        "padding_top": 8,
+        "padding_bottom": 8
+      }
+    },
     "disclosures": {
       "type": "disclosures",
       "settings": {
@@ -181,6 +220,7 @@
   },
   "order": [
     "dds_main_product",
+    "dds_spec_table_NCzzMJ",
     "disclosures",
     "related-products"
   ]
