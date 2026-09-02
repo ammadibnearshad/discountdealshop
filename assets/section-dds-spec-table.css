@@ -1,0 +1,94 @@
+/* ==========================================================================
+   DDS spec table
+   Reference: _reference/dds-product.html → .spec and .setlist
+
+   Dawn's root font-size is 62.5% (1rem = 10px). The prototype's rems were
+   16px-based and have been converted.
+
+   Colour fallbacks are the DDS palette; the var() calls pick up the tokens
+   emitted by snippets/dds-tokens.liquid.
+   ========================================================================== */
+
+.dds-spec {
+  max-width: var(--dds-app-width, 52rem);
+  margin-inline: auto;
+}
+
+@media screen and (min-width: 990px) {
+  .dds-spec {
+    max-width: var(--dds-app-width-lg, 108rem);
+  }
+}
+
+.dds-spec__card {
+  padding: 1.36rem 1.44rem;
+  border-radius: var(--dds-card-radius, 0);
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+}
+
+.dds-spec__head {
+  margin-bottom: 1.04rem;
+}
+
+.dds-spec__heading {
+  margin: 0;
+  font-size: 1.568rem;
+  font-weight: 700;
+  letter-spacing: normal;
+}
+
+.dds-spec__list {
+  margin: 0;
+}
+
+/* Rows --------------------------------------------------------------------- */
+
+.dds-spec__row {
+  display: flex;
+  gap: 1.2rem;
+  padding: 0.64rem 0;
+  border-bottom: 0.1rem solid var(--dds-line, #ededed);
+  font-size: 1.312rem;
+  line-height: 1.4;
+}
+
+.dds-spec__row:last-child {
+  border-bottom: 0;
+}
+
+.dds-spec__left {
+  min-width: 0;
+}
+
+.dds-spec__right {
+  min-width: 0;
+  margin: 0;
+}
+
+/* Label column — the reference's .spec. The left column is fixed but never
+   eats more than 40% of a narrow row, so no breakpoint is needed. */
+
+.dds-spec__list--label .dds-spec__left {
+  flex: 0 0 min(var(--dds-spec-label-w, 13.6rem), 40%);
+  color: var(--dds-muted, #8e8e8e);
+}
+
+.dds-spec__list--label .dds-spec__right {
+  color: var(--dds-ink, #1a1a1a);
+}
+
+/* Value on the right — the reference's .setlist. */
+
+.dds-spec__list--list .dds-spec__left {
+  color: var(--dds-ink-2, #5c5c5c);
+}
+
+.dds-spec__list--list .dds-spec__right {
+  margin-left: auto;
+  color: var(--dds-ink, #1a1a1a);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
