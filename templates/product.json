@@ -77,12 +77,31 @@
         },
         "store": {
           "type": "store",
+          "disabled": true,
           "settings": {
             "store_meta": "4.7 store rating · 12,000+ orders",
             "follow_label": "Follow",
             "follow_url": "",
             "show_social": false,
             "social_heading": "Follow us"
+          }
+        },
+        "accordion_AB9x9L": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Description",
+            "content": "",
+            "page": "",
+            "open_by_default": false
+          }
+        },
+        "accordion_NUcxwN": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Description",
+            "content": "",
+            "page": "",
+            "open_by_default": false
           }
         }
       },
@@ -94,7 +113,9 @@
         "quantity",
         "buy_buttons",
         "delivery",
-        "store"
+        "store",
+        "accordion_AB9x9L",
+        "accordion_NUcxwN"
       ],
       "settings": {
         "savings_tag": "SAVINGS",
@@ -102,6 +123,8 @@
         "savings_rotate_speed": 3,
         "urgency_label": "ALMOST SOLD OUT",
         "urgency_threshold": 25,
+        "accordion_heading": "",
+        "accordion_single_open": true,
         "padding_top": 8,
         "padding_bottom": 8
       }
