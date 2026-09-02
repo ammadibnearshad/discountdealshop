@@ -90,7 +90,7 @@
           "type": "accordion",
           "settings": {
             "heading": "Description",
-            "content": "",
+            "content": "<p>Test</p>",
             "page": "",
             "open_by_default": false
           }
@@ -99,7 +99,7 @@
           "type": "accordion",
           "settings": {
             "heading": "Description",
-            "content": "",
+            "content": "<p>Test</p>",
             "page": "",
             "open_by_default": false
           }
