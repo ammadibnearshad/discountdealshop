@@ -34,7 +34,7 @@
             "end_date": "2026-09-30",
             "end_time": "23:59",
             "allow_metafield_override": false,
-            "label": "Supre Save Sale",
+            "label": "Super Discount",
             "ends_label": "Ends in"
           }
         },
