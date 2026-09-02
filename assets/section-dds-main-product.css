@@ -728,3 +728,93 @@
   background: var(--dds-line-2, #dcdcdc);
   color: var(--dds-muted, #8e8e8e);
 }
+
+/* Accordions ---------------------------------------------------------------- */
+/* Consecutive accordion blocks render inside one .dds-pdp__accbox card, split
+   by hairlines rather than by gaps, so the group reads as a single surface.
+   Native <details>, so it works before the JS bundle lands and prints open. */
+
+.dds-pdp__accbox {
+  padding-block: 0.4rem;
+}
+
+.dds-pdp__accbox .dds-pdp__blockhead {
+  margin-block: 0.96rem 0.4rem;
+}
+
+.dds-pdp__acc {
+  display: block;
+}
+
+.dds-pdp__acc + .dds-pdp__acc {
+  border-top: 0.1rem solid var(--dds-line, #ededed);
+}
+
+.dds-pdp__acc-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  /* 44px touch target. */
+  min-height: 4.4rem;
+  padding-block: 0.96rem;
+  cursor: pointer;
+  list-style: none;
+  color: var(--dds-ink, #1a1a1a);
+}
+
+.dds-pdp__acc-summary::-webkit-details-marker {
+  display: none;
+}
+
+.dds-pdp__acc-summary:focus-visible {
+  outline: 0.2rem solid var(--dds-red, #d71e28);
+  outline-offset: -0.2rem;
+}
+
+.dds-pdp__acc-title {
+  font-size: 1.44rem;
+  font-weight: 600;
+}
+
+.dds-pdp__acc-summary .dds-icon--chevron {
+  flex: none;
+  width: 1.6rem;
+  height: 1.6rem;
+  fill: none;
+  stroke: var(--dds-ink-2, #5c5c5c);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform: rotate(90deg);
+  transition: transform 0.2s ease;
+}
+
+.dds-pdp__acc[open] .dds-pdp__acc-summary .dds-icon--chevron {
+  transform: rotate(-90deg);
+}
+
+.dds-pdp__acc-body {
+  padding-bottom: 1.2rem;
+  color: var(--dds-ink-2, #5c5c5c);
+  font-size: 1.312rem;
+  line-height: 1.6;
+}
+
+.dds-pdp__acc-body > :first-child {
+  margin-top: 0;
+}
+
+.dds-pdp__acc-body > :last-child {
+  margin-bottom: 0;
+}
+
+.dds-pdp__acc-body img {
+  height: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dds-pdp__acc-summary .dds-icon--chevron {
+    transition: none;
+  }
+}

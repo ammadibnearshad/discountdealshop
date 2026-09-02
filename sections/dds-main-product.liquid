@@ -90,6 +90,39 @@
       endif
     endif
   endfor
+
+  comment
+    Every accordion block shares one card. Same first-consecutive-run rule as
+    the two groups above, so a block dropped between two accordions splits the
+    card instead of being swallowed by it.
+  endcomment
+  assign acc_first = 0
+  assign acc_last = 0
+  assign acc_open = false
+  assign acc_done = false
+  for block in section.blocks
+    if block.type == 'accordion' and acc_done == false
+      unless acc_open
+        assign acc_open = true
+        assign acc_first = forloop.index
+      endunless
+      assign acc_last = forloop.index
+    else
+      if acc_open
+        assign acc_done = true
+      endif
+    endif
+  endfor
+
+  assign acc_visible = 0
+  for block in section.blocks
+    if block.type == 'accordion' and forloop.index >= acc_first and forloop.index <= acc_last
+      assign acc_row = block.settings.content | append: block.settings.page.content
+      if block.settings.heading != blank and acc_row != blank
+        assign acc_visible = acc_visible | plus: 1
+      endif
+    endif
+  endfor
 -%}
 
 {% style %}
@@ -159,10 +192,23 @@
           if buy_first > 0 and forloop.index >= buy_first and forloop.index <= buy_last
             assign in_buy = true
           endif
+
+          assign in_acc = false
+          if acc_first > 0 and forloop.index >= acc_first and forloop.index <= acc_last
+            assign in_acc = true
+          endif
         -%}
 
         {%- if forloop.index == head_first -%}<div class="dds-pdp__card dds-pdp__headbox">{%- endif -%}
         {%- if forloop.index == buy_first -%}<div class="dds-pdp__card dds-pdp__buybox">{%- endif -%}
+        {%- if forloop.index == acc_first and acc_visible > 0 -%}
+          <div class="dds-pdp__card dds-pdp__accbox">
+            {%- if section.settings.accordion_heading != blank -%}
+              <div class="dds-pdp__blockhead">
+                <h2>{{ section.settings.accordion_heading | escape }}</h2>
+              </div>
+            {%- endif -%}
+        {%- endif -%}
 
         {%- case block.type -%}
 
@@ -468,11 +514,29 @@
               {%- endif -%}
             </div>
 
+          {%- when 'accordion' -%}
+            {%- assign acc_body = block.settings.content | append: block.settings.page.content -%}
+            {%- if block.settings.heading != blank and acc_body != blank -%}
+              <details
+                class="dds-pdp__acc{% unless in_acc %} dds-pdp__card{% endunless %}"
+                {% if section.settings.accordion_single_open %}name="dds-acc-{{ section.id }}"{% endif %}
+                {% if block.settings.open_by_default %}open{% endif %}
+                {{ block.shopify_attributes }}
+              >
+                <summary class="dds-pdp__acc-summary">
+                  <span class="dds-pdp__acc-title">{{ block.settings.heading | escape }}</span>
+                  {%- render 'icon-dds-chevron-right' -%}
+                </summary>
+                <div class="dds-pdp__acc-body rte">{{ acc_body }}</div>
+              </details>
+            {%- endif -%}
+
           {%- when '@app' -%}
             {% render block %}
 
         {%- endcase -%}
 
+        {%- if forloop.index == acc_last and acc_visible > 0 -%}</div>{%- endif -%}
         {%- if forloop.index == buy_last -%}</div>{%- endif -%}
         {%- if forloop.index == head_last -%}</div>{%- endif -%}
       {%- endfor -%}
@@ -538,6 +602,27 @@
       "unit": "pcs",
       "label": "Show chip at or below",
       "default": 25
+    },
+    {
+      "type": "header",
+      "content": "Accordions"
+    },
+    {
+      "type": "paragraph",
+      "content": "Every accordion block sitting next to its neighbours renders inside one shared card."
+    },
+    {
+      "type": "text",
+      "id": "accordion_heading",
+      "label": "Card heading",
+      "info": "Sits above the first accordion. Leave blank to hide it."
+    },
+    {
+      "type": "checkbox",
+      "id": "accordion_single_open",
+      "label": "Open one at a time",
+      "info": "Opening a row closes the others.",
+      "default": true
     },
     {
       "type": "header",
@@ -696,6 +781,18 @@
         { "type": "checkbox", "id": "show_social", "default": true, "label": "Show social links",
           "info": "Reads the links from Theme settings > Social media. The row hides when none are set." },
         { "type": "text", "id": "social_heading", "label": "Social links label", "default": "Follow us" }
+      ]
+    },
+    {
+      "type": "accordion",
+      "name": "Accordion row",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Row heading", "default": "Description",
+          "info": "The row hides itself when the heading or the content is empty." },
+        { "type": "richtext", "id": "content", "label": "Row content" },
+        { "type": "page", "id": "page", "label": "Row content from page",
+          "info": "Appended after the text above. Useful for shared copy such as a returns policy." },
+        { "type": "checkbox", "id": "open_by_default", "label": "Open by default", "default": false }
       ]
     },
     { "type": "@app" }
