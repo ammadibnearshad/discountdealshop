@@ -25,16 +25,16 @@
         "price": {
           "type": "price",
           "settings": {
-            "off_badge_label": "% OFF limited time"
+            "off_badge_label": "% OFF"
           }
         },
         "countdown": {
           "type": "countdown",
           "settings": {
-            "end_date": "",
+            "end_date": "2026-09-30",
             "end_time": "23:59",
             "allow_metafield_override": false,
-            "label": "Big sale",
+            "label": "Supre Save Sale",
             "ends_label": "Ends in"
           }
         },
