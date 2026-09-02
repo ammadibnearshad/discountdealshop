@@ -62,6 +62,24 @@
             "whatsapp_message": "Hi! I want to order [product] ([variant]) for [price]. [url]"
           }
         },
+        "trust_dCBVKK": {
+          "type": "trust",
+          "settings": {
+            "heading": "",
+            "label_1": "Safe payments",
+            "icon_1": "card",
+            "tone_1": "green",
+            "label_2": "Security & privacy",
+            "icon_2": "shield",
+            "tone_2": "green",
+            "label_3": "Delivery guarantee",
+            "icon_3": "truck",
+            "tone_3": "red",
+            "label_4": "",
+            "icon_4": "return",
+            "tone_4": "green"
+          }
+        },
         "delivery": {
           "type": "delivery",
           "settings": {
@@ -112,6 +130,7 @@
         "variant_picker",
         "quantity",
         "buy_buttons",
+        "trust_dCBVKK",
         "delivery",
         "store",
         "accordion_AB9x9L",
