@@ -289,7 +289,7 @@
 
 .dds-pdp__price-row {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   flex-wrap: wrap;
   gap: 0.72rem;
   font-variant-numeric: tabular-nums;
