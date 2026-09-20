@@ -108,16 +108,7 @@
           "type": "accordion",
           "settings": {
             "heading": "Description",
-            "content": "<p>Test</p>",
-            "page": "",
-            "open_by_default": false
-          }
-        },
-        "accordion_NUcxwN": {
-          "type": "accordion",
-          "settings": {
-            "heading": "Description",
-            "content": "<p>Test</p>",
+            "content": "{{ product.description }}",
             "page": "",
             "open_by_default": false
           }
@@ -133,8 +124,7 @@
         "trust_dCBVKK",
         "delivery",
         "store",
-        "accordion_AB9x9L",
-        "accordion_NUcxwN"
+        "accordion_AB9x9L"
       ],
       "settings": {
         "savings_tag": "SAVINGS",
@@ -146,56 +136,6 @@
         "accordion_single_open": true,
         "padding_top": 8,
         "padding_bottom": 8
-      }
-    },
-    "dds_spec_table_NCzzMJ": {
-      "type": "dds-spec-table",
-      "blocks": {
-        "row_MY9XPy": {
-          "type": "row",
-          "settings": {
-            "left": "Label",
-            "right": "Value"
-          }
-        },
-        "row_Cgd8UD": {
-          "type": "row",
-          "settings": {
-            "left": "Label",
-            "right": "Value"
-          }
-        },
-        "row_JUmaMR": {
-          "type": "row",
-          "settings": {
-            "left": "Label",
-            "right": "Value"
-          }
-        }
-      },
-      "block_order": [
-        "row_MY9XPy",
-        "row_Cgd8UD",
-        "row_JUmaMR"
-      ],
-      "name": "DDS spec table",
-      "settings": {
-        "heading": "Item details",
-        "layout": "list",
-        "label_width": 136,
-        "padding_top": 8,
-        "padding_bottom": 8
-      }
-    },
-    "disclosures": {
-      "type": "disclosures",
-      "settings": {
-        "heading": "Disclosures",
-        "heading_size": "h2",
-        "open_by_default": false,
-        "color_scheme": "",
-        "padding_top": 36,
-        "padding_bottom": 0
       }
     },
     "related-products": {
@@ -220,8 +160,6 @@
   },
   "order": [
     "dds_main_product",
-    "dds_spec_table_NCzzMJ",
-    "disclosures",
     "related-products"
   ]
 }
